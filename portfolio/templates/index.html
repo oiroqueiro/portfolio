@@ -19,8 +19,8 @@
       </div>
 
       <div class="col-11 col-lg-7 col-xxl-5">
-        <h1 class="display-2 mb-3">{% block hello %}{{ hello }} {% endblock %}<br/>{% block name %} {{ name }}{% endblock %}</h1>
-        <p class="mb-4 pb-2">{% block subtitle %}{{subtitle}}{% endblock %}</p>
+        <h1 class="display-2 mb-3">{{ hello }}<br/>{{ name }}</h1>
+        <p class="mb-4 pb-2">{{ subtitle }}</p>
         <a href="{{ url_for('contact', _external=True, lang=lang) }}" class="btn btn-primary">{% block get_touch %}{{get_touch}}{% endblock %}</a>
       </div>
     </div>

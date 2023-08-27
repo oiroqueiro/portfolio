@@ -101,7 +101,7 @@
   </div>
 
   <script src="{{ url_for('static', filename='js/main_script.js') }}"></script> 
-
+  
   <header class="sticky-top bg-body navigation">
     <div class="container">
     
@@ -167,26 +167,8 @@
               <a class="nav-link" 
                 href="{{ url_for('contact', _external=True, lang=lang) }}">{% block menu_contact %}{{menu_contact}}{% endblock %}</a>
             </li>          
-            
-            <!--
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Pages</a>
-              <div class="dropdown-menu">              
-                <a class="dropdown-item " 
-                  href="/iwriter-hugo/blog/post-1/">Blog Details</a>
-                <a class="dropdown-item " 
-                  href="/iwriter-hugo/categories/travel">Category</a>              
-              </div>
-            </li>   
-            -->                 
+                            
           </ul>
-          
-          <!--
-          <select class="m-2 me-0 border-0 bg-transparent select-language d-none d-lg-inline-block" id="select-language" onchange="location = this.value;">
-            <option id="en" value="{{ url_for(request.endpoint, _external=True, lang='en') }}" {% if lang == 'en' %}selected{% endif %}>EN</option>
-            <option id="es" value="{{ url_for(request.endpoint, _external=True, lang='es') }}" {% if lang == 'es' %}selected{% endif %}>ES</option>
-          </select>
-          -->
 
           <select class="m-2 me-0 border-0 bg-transparent select-language d-none d-lg-inline-block" id="select-language" onchange="location = this.value;">
             {% for language in languages %}
@@ -247,6 +229,14 @@
     </section>
 
 	</main>	
+
+  <!--<script src="{{ url_for('static', filename='js/bootstrap_script.js') }}"></script>-->
+  <!-- *** While the previous line doesn't work, I load the script to make the navbar works.
+       Trying to be a temporary solution to my navbar that doesn't work-->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous">
+  </script>
 
   <script src="{{ url_for('static', filename='js/darkmode_script.js') }}"></script>
   

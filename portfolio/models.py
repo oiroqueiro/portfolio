@@ -1,6 +1,8 @@
-from portfolio import db
+from portfolio import db, login
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
-class Users(db.Model):
+class Users(UserMixin, db.Model):
     _tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -10,6 +12,15 @@ class Users(db.Model):
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
+    
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+    
+    def get_user(self, uname):
+        return Users.query.filter_by(username=uname).first()
 
 class Languages(db.Model):
     __tablename__ = 'languages'
@@ -49,3 +60,7 @@ class Content(db.Model):
             d['value'] = cont.value
             d['link'] = cont.link
         return d
+
+@login.user_loader
+def load_user(id):
+    return Users.query.get(int(id))

@@ -3,6 +3,10 @@ class Config(object):
 
     basedir = os.path.abspath(os.path.dirname(__file__))
 
+    # Secret Key
+
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+
     # Emailing
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
     MAIL_PORT = int(os.environ.get('MAIL_PORT'))
