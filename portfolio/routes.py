@@ -5,7 +5,6 @@ from flask_login import current_user, login_user, logout_user
 from portfolio.forms import LoginForm
 from portfolio.models import Languages, Content, Users
 
-
 portfolio.app_context().push()
 
 languages = list([str(l) for l in Languages.get_all()])
@@ -23,6 +22,7 @@ def index(lang=None):
     menu_projects = Content.get_value('',lang,'menu_projects')['value']
     get_touch = Content.get_value('',lang,'get_touch')['value']
     foot = Content.get_value('',lang,'foot')['value']
+
 
     if lang == 'en':
         hello = "Hey, I’m"
@@ -48,7 +48,7 @@ def about(lang=None):
     menu_home = Content.get_value('',lang,'menu_home')['value']
     menu_about = Content.get_value('',lang,'menu_about')['value']
     menu_contact = Content.get_value('',lang,'menu_contact')['value']
-    menu_projects = Content.get_value('',lang,'menu_projects')['value']    
+    menu_projects = Content.get_value('',lang,'menu_projects')['value']
     foot = Content.get_value('',lang,'foot')['value']
 
     if lang == 'en':
@@ -102,9 +102,6 @@ def about(lang=None):
                            skills_title=skills_title, skill1=skill1, skill2=skill2, skill3=skill3,
                            foot=foot)
 
-
-    return render_template('about/index.html')
-
 @portfolio.route('/projects/')
 def projects():
     return render_template('element/index.html')
@@ -137,7 +134,7 @@ def contact(lang=None):
         email = 'Correo Electrónico'
         message = 'Escribe tu mensaje...'
         submit = 'Enviar mensaje'        
-
+    
     if request.method == 'POST':
         first_name_post = request.form['First Name']
         last_name_post = request.form['Last Name']
@@ -148,7 +145,7 @@ def contact(lang=None):
 
         send_email(portfolio.config['MAIL_USERNAME'], ['info@oscarlytics.com'],        
                     'New message from Oscarlytics portfolio',msg_body)
-        
+
         return redirect(request.url)
 
     return render_template('contact/index.html', lang=lang, languages=languages, 
@@ -158,8 +155,8 @@ def contact(lang=None):
                            email=email, message=message, submit=submit,
                            foot=foot)
 
-@portfolio.route('/login/', methods=['GET', 'POST'])
-@portfolio.route('/<lang>/login/', methods=['GET', 'POST'])
+@portfolio.route(f"/{portfolio.config['PORTFOLIO_LOGIN_URL']}/", methods=['GET', 'POST'])
+@portfolio.route(f"/<lang>/{portfolio.config['PORTFOLIO_LOGIN_URL']}/", methods=['GET', 'POST'])
 def login(lang=None): 
     if lang is None:
         lang='en'  # Set a default language if lang is not provided
@@ -170,16 +167,22 @@ def login(lang=None):
     menu_projects = Content.get_value('',lang,'menu_projects')['value']
     foot = Content.get_value('',lang,'foot')['value']
 
-    if current_user.is_authenticated:
+    if current_user.is_authenticated:        
         return redirect(url_for('index', lang=lang))
-        
+      
     form = LoginForm()    
+
+    form.username.label.text = Content.get_value('',lang,'username')['value']
+    form.password.label.text = Content.get_value('',lang,'password')['value']
+    form.remember_me.label.text = Content.get_value('',lang,'rememberme')['value']
+    form.submit.label.text = Content.get_value('',lang,'signin')['value']
 
     if form.validate_on_submit():
         user = Users.query.filter_by(username=form.username.data).first()  
-        if user is None or not user.check_password(form.password.data):               
-            flash('Invalid username or password')            
-            return redirect(url_for('login', lang=lang))        
+        if user is None or not user.check_password(form.password.data):                           
+            flash('Invalid username or password')                        
+            return redirect(url_for('login', lang=lang))
+
         login_user(user, remember=form.remember_me.data)
 
         return redirect(url_for('index', lang=lang))
@@ -188,12 +191,11 @@ def login(lang=None):
                            lang=lang, languages=languages, 
                            menu_home=menu_home, menu_about=menu_about, 
                            menu_contact=menu_contact, menu_projects=menu_projects,
-                           foot=foot)
+                           signin=form.submit.label.text,
+                           foot=foot)    
     
-
-    
-@portfolio.route('/logout/')
-@portfolio.route('/<lang>/logout/', methods=['GET', 'POST'])
+@portfolio.route(f"/{portfolio.config['PORTFOLIO_LOGOUT_URL']}/", methods=['GET', 'POST'])
+@portfolio.route(f"/<lang>/{portfolio.config['PORTFOLIO_LOGOUT_URL']}/", methods=['GET', 'POST'])
 def logout(lang=None):
     if lang is None:
         lang='en'  # Set a default language if lang is not provided
