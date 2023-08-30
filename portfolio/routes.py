@@ -20,6 +20,13 @@ def index(lang=None):
     menu_about = Content.get_value('',lang,'menu_about')['value']
     menu_contact = Content.get_value('',lang,'menu_contact')['value']
     menu_projects = Content.get_value('',lang,'menu_projects')['value']
+    menu_manage = Content.get_value('',lang,'menu_manage')['value']
+    menu_manage_home = Content.get_value('',lang,'menu_manage_home')['value']
+    menu_manage_about = Content.get_value('',lang,'menu_manage_about')['value']
+    menu_manage_projects = Content.get_value('',lang,'menu_manage_projects')['value']    
+    menu_manage_contact = Content.get_value('',lang,'menu_manage_contact')['value']
+    menu_manage_logout = Content.get_value('',lang,'menu_manage_logout')['value']
+
     get_touch = Content.get_value('',lang,'get_touch')['value']
     foot = Content.get_value('',lang,'foot')['value']
 
@@ -36,6 +43,9 @@ def index(lang=None):
     return render_template('index.html', lang=lang, languages=languages,
                            menu_home=menu_home, menu_about=menu_about, 
                            menu_contact=menu_contact, menu_projects=menu_projects, 
+                           menu_manage=menu_manage, menu_manage_home=menu_manage_home,
+                           menu_manage_about=menu_manage_about, menu_manage_projects=menu_manage_projects,
+                           menu_manage_contact=menu_manage_contact,menu_manage_logout=menu_manage_logout,
                            hello=hello, name=name, subtitle=subtitle, get_touch=get_touch, 
                            foot=foot)
 
@@ -49,6 +59,12 @@ def about(lang=None):
     menu_about = Content.get_value('',lang,'menu_about')['value']
     menu_contact = Content.get_value('',lang,'menu_contact')['value']
     menu_projects = Content.get_value('',lang,'menu_projects')['value']
+    menu_manage = Content.get_value('',lang,'menu_manage')['value']
+    menu_manage_home = Content.get_value('',lang,'menu_manage_home')['value']
+    menu_manage_about = Content.get_value('',lang,'menu_manage_about')['value']
+    menu_manage_projects = Content.get_value('',lang,'menu_manage_projects')['value']    
+    menu_manage_contact = Content.get_value('',lang,'menu_manage_contact')['value']
+    menu_manage_logout = Content.get_value('',lang,'menu_manage_logout')['value']    
     foot = Content.get_value('',lang,'foot')['value']
 
     if lang == 'en':
@@ -96,6 +112,9 @@ def about(lang=None):
     return render_template('about/index.html', lang=lang, languages=languages, 
                            menu_home=menu_home, menu_about=menu_about, 
                            menu_contact=menu_contact, menu_projects=menu_projects,  
+                           menu_manage=menu_manage, menu_manage_home=menu_manage_home,
+                           menu_manage_about=menu_manage_about, menu_manage_projects=menu_manage_projects,
+                           menu_manage_contact=menu_manage_contact,menu_manage_logout=menu_manage_logout,
                            hello=hello, parragraph1=parragraph1, parragraph2=parragraph2, 
                            parragraph3=parragraph3, parragraph4=parragraph4, parragraph5=parragraph5,
                            parragraph6=parragraph6, 
@@ -116,6 +135,12 @@ def contact(lang=None):
     menu_about = Content.get_value('',lang,'menu_about')['value']
     menu_contact = Content.get_value('',lang,'menu_contact')['value']
     menu_projects = Content.get_value('',lang,'menu_projects')['value']
+    menu_manage = Content.get_value('',lang,'menu_manage')['value']
+    menu_manage_home = Content.get_value('',lang,'menu_manage_home')['value']
+    menu_manage_about = Content.get_value('',lang,'menu_manage_about')['value']
+    menu_manage_projects = Content.get_value('',lang,'menu_manage_projects')['value']    
+    menu_manage_contact = Content.get_value('',lang,'menu_manage_contact')['value']
+    menu_manage_logout = Content.get_value('',lang,'menu_manage_logout')['value']    
     foot = Content.get_value('',lang,'foot')['value']
 
     if lang == 'en':
@@ -151,6 +176,9 @@ def contact(lang=None):
     return render_template('contact/index.html', lang=lang, languages=languages, 
                            menu_home=menu_home, menu_about=menu_about, 
                            menu_contact=menu_contact, menu_projects=menu_projects, 
+                           menu_manage=menu_manage, menu_manage_home=menu_manage_home,
+                           menu_manage_about=menu_manage_about, menu_manage_projects=menu_manage_projects,
+                           menu_manage_contact=menu_manage_contact,menu_manage_logout=menu_manage_logout,
                            title=title, subtitle=subtitle, first_name=first_name, last_name=last_name,
                            email=email, message=message, submit=submit,
                            foot=foot)
@@ -165,6 +193,12 @@ def login(lang=None):
     menu_about = Content.get_value('',lang,'menu_about')['value']
     menu_contact = Content.get_value('',lang,'menu_contact')['value']
     menu_projects = Content.get_value('',lang,'menu_projects')['value']
+    menu_manage = Content.get_value('',lang,'menu_manage')['value']
+    menu_manage_home = Content.get_value('',lang,'menu_manage_home')['value']
+    menu_manage_about = Content.get_value('',lang,'menu_manage_about')['value']
+    menu_manage_projects = Content.get_value('',lang,'menu_manage_projects')['value']    
+    menu_manage_contact = Content.get_value('',lang,'menu_manage_contact')['value']
+    menu_manage_logout = Content.get_value('',lang,'menu_manage_logout')['value']    
     foot = Content.get_value('',lang,'foot')['value']
 
     if current_user.is_authenticated:        
@@ -180,7 +214,7 @@ def login(lang=None):
     if form.validate_on_submit():
         user = Users.query.filter_by(username=form.username.data).first()  
         if user is None or not user.check_password(form.password.data):                           
-            flash('Invalid username or password')                        
+            flash(Content.get_value('',lang,'errorlogin')['value'])                        
             return redirect(url_for('login', lang=lang))
 
         login_user(user, remember=form.remember_me.data)
@@ -191,6 +225,9 @@ def login(lang=None):
                            lang=lang, languages=languages, 
                            menu_home=menu_home, menu_about=menu_about, 
                            menu_contact=menu_contact, menu_projects=menu_projects,
+                           menu_manage=menu_manage, menu_manage_home=menu_manage_home,
+                           menu_manage_about=menu_manage_about, menu_manage_projects=menu_manage_projects,
+                           menu_manage_contact=menu_manage_contact,menu_manage_logout=menu_manage_logout,
                            signin=form.submit.label.text,
                            foot=foot)    
     

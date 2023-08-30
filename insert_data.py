@@ -90,6 +90,11 @@ def insert_data():
         portfolio_item = Content(template='',languageid=lang_id,variable='menu_manage_contact',value='Edit Contact')
         db.session.add(portfolio_item)
 
+    portfolio_item =  menu_exists(lang_id, 'menu_manage_logout')
+   
+    if not portfolio_item:        
+        portfolio_item = Content(template='',languageid=lang_id,variable='menu_manage_logout',value='Logout')
+        db.session.add(portfolio_item)
 
     portfolio_item =  menu_exists(lang_id, 'get_touch')
    
@@ -127,6 +132,11 @@ def insert_data():
         portfolio_item = Content(template='',languageid=lang_id,variable='rememberme',value='Remember Me')
         db.session.add(portfolio_item)
 
+    portfolio_item =  menu_exists(lang_id, 'errorlogin')
+   
+    if not portfolio_item:        
+        portfolio_item = Content(template='',languageid=lang_id,variable='errorlogin',value='Invalid username or password')
+        db.session.add(portfolio_item)
 
     # Spanish
 
@@ -186,6 +196,12 @@ def insert_data():
         portfolio_item = Content(template='',languageid=lang_id,variable='menu_manage_contact',value='Editar Contacto')
         db.session.add(portfolio_item)
 
+    portfolio_item =  menu_exists(lang_id, 'menu_manage_logout')
+   
+    if not portfolio_item:        
+        portfolio_item = Content(template='',languageid=lang_id,variable='menu_manage_logout',value='Cerrar Sesión')
+        db.session.add(portfolio_item)
+
     portfolio_item =  menu_exists(lang_id, 'get_touch')
    
     if not portfolio_item:        
@@ -220,6 +236,12 @@ def insert_data():
    
     if not portfolio_item:        
         portfolio_item = Content(template='',languageid=lang_id,variable='rememberme',value='Recuérdame')
+        db.session.add(portfolio_item)
+
+    portfolio_item =  menu_exists(lang_id, 'errorlogin')
+   
+    if not portfolio_item:        
+        portfolio_item = Content(template='',languageid=lang_id,variable='errorlogin',value='Nombre de Usuario o Contraseña no válidos')
         db.session.add(portfolio_item)
 
     db.session.commit()
