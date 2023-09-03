@@ -173,7 +173,7 @@
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ menu_manage }}</a>
                 <div class="dropdown-menu">
-                                                  
+                                                              
                   <a class="dropdown-item " 
                     href="{{ url_for('index', _external=True, lang=lang) }}">{{ menu_manage_home }}</a>                            
                   
@@ -181,10 +181,10 @@
                     href="{{ url_for('about', _external=True, lang=lang) }}">{{ menu_manage_about }}</a>
                   
                   <a class="dropdown-item " 
-                    href="{{ url_for('contact', _external=True, lang=lang) }}">{{ menu_manage_projects }}</a>
+                    href="{{ url_for('projects', _external=True, lang=lang) }}">{{ menu_manage_projects }}</a>
 
                   <a class="dropdown-item " 
-                    href="{{ url_for('projects', _external=True, lang=lang) }}">{{ menu_manage_contact }}</a>
+                    href="{{ url_for('contact', _external=True, lang=lang) }}">{{ menu_manage_contact }}</a>
 
                   <div class="border-top"></div>
 

@@ -30,19 +30,19 @@
             <p>{{ parragraph2 }}</p>
             <p>{{ parragraph3 }}</p>
             
-          <h3 id="our-skill">My Skills</h3>
+          <h3 id="our-skill">{{ skills_title }}</h3>
           <p>{{ parragraph4 }}</p>
             <ul>
-            <li>Creative Problem Solving.</li>
-            <li>Responsible.</li>
-            <li>Adaptability.</li>
+            <li>{{ skill1 }}</li>
+            <li>{{ skill2 }}</li>
+            <li>{{ skill3 }}</li>
             </ul>
-          <a href="{{ url_for('index', _external=True, lang=lang) }}" class="btn btn-primary text-white">Read More</a>
+          <a href="{{ url_for('index', _external=True, lang=lang) }}" class="btn btn-primary text-white">{{ more }}</a>
 
           <h3 id="youtube">Youtube</h3>
 
           <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
-            <iframe src="https://www.youtube.com/embed/8CAoLz4NS5o" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
+            <iframe src="{{ youtube }}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" allowfullscreen title="YouTube Video"></iframe>
           </div>
 
           <p>{{ parragraph5 }}</p>

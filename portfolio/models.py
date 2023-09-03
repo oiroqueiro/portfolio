@@ -21,6 +21,17 @@ class Users(UserMixin, db.Model):
     
     def get_user(self, uname):
         return Users.query.filter_by(username=uname).first()
+    
+    def get_all():
+        return Users.query.all()
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'password': self.password_hash,            
+            'email': self.email
+        }
 
 class Languages(db.Model):
     __tablename__ = 'languages'
@@ -45,8 +56,7 @@ class Content(db.Model):
     template = db.Column(db.String(20), index=True)
     variable = db.Column(db.String(20), index=True)
     languageid = db.Column(db.Integer, db.ForeignKey('languages.id', name='fk_languageid'))
-    value = db.Column(db.String(250))
-    link = db.Column(db.String(150))    
+    value = db.Column(db.String(250))    
 
     def __repr__(self):
         return '<Content {} {} {} {}>'.format(self.template, self.variable, self.languageid, self.value)
@@ -58,7 +68,6 @@ class Content(db.Model):
         if cont:
             d = dict()
             d['value'] = cont.value
-            d['link'] = cont.link
         return d
 
 @login.user_loader
