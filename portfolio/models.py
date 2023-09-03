@@ -62,6 +62,9 @@ class Content(db.Model):
         return '<Content {} {} {} {}>'.format(self.template, self.variable, self.languageid, self.value)
     
     def get_value(tem, lang, var) -> dict:
+        if lang is None:
+            return dict()
+        
         langid = Languages.query.filter(Languages.language == lang).first().id
         cont = Content.query.filter(Content.template == tem, Content.languageid == langid, 
                                     Content.variable == var).first()

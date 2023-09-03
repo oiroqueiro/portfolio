@@ -7,8 +7,6 @@ from portfolio.models import Languages, Content, Users
 
 portfolio.app_context().push()
 
-languages = list([str(l) for l in Languages.get_all()])
-
 # Managing the context processor and multilanguage
 
 @portfolio.before_request
@@ -18,6 +16,8 @@ def set_lang(lang=None):
 @portfolio.context_processor
 def inject_data():
     lang = request.lang
+
+    languages = list([str(l) for l in Languages.get_all()])
 
     menu_home = Content.get_value('',lang,'menu_home')['value']
     menu_about = Content.get_value('',lang,'menu_about')['value']
@@ -31,11 +31,22 @@ def inject_data():
     menu_manage_logout = Content.get_value('',lang,'menu_manage_logout')['value']
     foot = Content.get_value('',lang,'foot')['value']
     
-    return dict(menu_home=menu_home, menu_about=menu_about, menu_contact=menu_contact, 
+    return dict(languages=languages, 
+                menu_home=menu_home, menu_about=menu_about, menu_contact=menu_contact, 
                 menu_projects=menu_projects, menu_manage=menu_manage,
                 menu_manage_home=menu_manage_home, menu_manage_about=menu_manage_about,
                 menu_manage_projects=menu_manage_projects, menu_manage_contact=menu_manage_contact,
                 menu_manage_logout=menu_manage_logout, foot=foot)
+
+# errors
+
+@portfolio.errorhandler(404)
+def page_not_found(e, lang=None):
+    return render_template('404.html', lang=lang), 404
+
+@portfolio.errorhandler(500)
+def internal_server_error(e, lang=None):
+    return render_template('404.html', lang=lang), 500
 
 # index
 
@@ -54,7 +65,7 @@ def index(lang=None):
     name = str(Content.get_value('index',lang,'name')['value'] or '')
     subtitle = str(Content.get_value('index',lang,'subtitle')['value'] or '')
     
-    return render_template('index.html', lang=lang, languages=languages,
+    return render_template('index.html', lang=lang, 
                            hello=hello, name=name, subtitle=subtitle, get_touch=get_touch)                            
 
 # about
@@ -81,7 +92,7 @@ def about(lang=None):
     more = str(Content.get_value('about',lang,'more')['value'] or '')
     youtube = str(Content.get_value('about',lang,'youtube')['value'] or '')
 
-    return render_template('about/index.html', lang=lang, languages=languages, 
+    return render_template('about/index.html', lang=lang, 
                            hello=hello, parragraph1=parragraph1, parragraph2=parragraph2, 
                            parragraph3=parragraph3, parragraph4=parragraph4, parragraph5=parragraph5,
                            parragraph6=parragraph6, 
@@ -125,7 +136,7 @@ def contact(lang=None):
 
         return redirect(request.url)
 
-    return render_template('contact/index.html', lang=lang, languages=languages, 
+    return render_template('contact/index.html', lang=lang, 
                            title=title, subtitle=subtitle, first_name=first_name, last_name=last_name,
                            email=email, message=message, submit=submit)
 
@@ -159,8 +170,7 @@ def login(lang=None):
 
         return redirect(url_for('index', lang=lang))
     
-    return render_template('login.html', form=form,
-                           lang=lang, languages=languages, 
+    return render_template('login.html', form=form, lang=lang, 
                            signin=form.submit.label.text)
     
 # logout

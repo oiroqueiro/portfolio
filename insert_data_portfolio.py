@@ -11,8 +11,8 @@ def menu_exists(menu_langid, menu_var):
 
 def insert_data():
     """
-    This function would be used to insert data in the database
-    At the moment, it will be with SQL directly or in the own website
+    This function would be used to insert content in the database
+    At the moment, it will be with SQL directly 
     when I can improve the project, I will give the option of import one file    
     """
         
