@@ -19,18 +19,21 @@ def inject_data():
 
     languages = list([str(l) for l in Languages.get_all()])
 
-    menu_home = Content.get_value('',lang,'menu_home')['value']
-    menu_about = Content.get_value('',lang,'menu_about')['value']
-    menu_contact = Content.get_value('',lang,'menu_contact')['value']
-    menu_projects = Content.get_value('',lang,'menu_projects')['value']
-    menu_manage = Content.get_value('',lang,'menu_manage')['value']
-    menu_manage_home = Content.get_value('',lang,'menu_manage_home')['value']
-    menu_manage_about = Content.get_value('',lang,'menu_manage_about')['value']
-    menu_manage_projects = Content.get_value('',lang,'menu_manage_projects')['value']    
-    menu_manage_contact = Content.get_value('',lang,'menu_manage_contact')['value']
-    menu_manage_logout = Content.get_value('',lang,'menu_manage_logout')['value']
-    foot = Content.get_value('',lang,'foot')['value']
-    
+    try:
+        menu_home = str(Content.get_value('',lang,'menu_home')['value'] or '')
+        menu_about = Content.get_value('',lang,'menu_about')['value']
+        menu_contact = Content.get_value('',lang,'menu_contact')['value']
+        menu_projects = Content.get_value('',lang,'menu_projects')['value']
+        menu_manage = Content.get_value('',lang,'menu_manage')['value']
+        menu_manage_home = Content.get_value('',lang,'menu_manage_home')['value']
+        menu_manage_about = Content.get_value('',lang,'menu_manage_about')['value']
+        menu_manage_projects = Content.get_value('',lang,'menu_manage_projects')['value']    
+        menu_manage_contact = Content.get_value('',lang,'menu_manage_contact')['value']
+        menu_manage_logout = Content.get_value('',lang,'menu_manage_logout')['value']
+        foot = Content.get_value('',lang,'foot')['value']
+    except KeyError:
+        abort(404)
+
     return dict(languages=languages, 
                 menu_home=menu_home, menu_about=menu_about, menu_contact=menu_contact, 
                 menu_projects=menu_projects, menu_manage=menu_manage,
@@ -38,15 +41,6 @@ def inject_data():
                 menu_manage_projects=menu_manage_projects, menu_manage_contact=menu_manage_contact,
                 menu_manage_logout=menu_manage_logout, foot=foot)
 
-# errors
-
-@portfolio.errorhandler(404)
-def page_not_found(e, lang=None):
-    return render_template('404.html', lang=lang), 404
-
-@portfolio.errorhandler(500)
-def internal_server_error(e, lang=None):
-    return render_template('404.html', lang=lang), 500
 
 # index
 
@@ -103,7 +97,7 @@ def about(lang=None):
 
 @portfolio.route('/projects/')
 def projects():
-    return render_template('element/index.html')
+    return render_template('projects/index.html')
 
 # contact
 
@@ -132,7 +126,7 @@ def contact(lang=None):
         
         msg_body = f"Name: {first_name_post} {last_name_post}\n\nEmail: {email_post}\n\nMessage:\n {message_post}"        
 
-        send_email(portfolio.config['MAIL_USERNAME'], ['info@oscarlytics.com'], email_subject ,msg_body)
+        send_email(portfolio.config['MAIL_USERNAME'], portfolio.config['MAIL_RECIPIENT'], email_subject ,msg_body)
 
         return redirect(request.url)
 

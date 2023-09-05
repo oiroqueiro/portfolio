@@ -66,10 +66,12 @@ class Content(db.Model):
             return dict()
         
         langid = Languages.query.filter(Languages.language == lang).first().id
-        cont = Content.query.filter(Content.template == tem, Content.languageid == langid, 
+
+        cont = Content.query.filter(Content.template == str(tem or ''), Content.languageid == langid, 
                                     Content.variable == var).first()
         if cont:
             d = dict()
+            print(f"*** {cont.value}")
             d['value'] = cont.value
         return d
 
