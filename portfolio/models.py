@@ -71,10 +71,33 @@ class Content(db.Model):
                                     Content.variable == var).first()
         if cont:
             d = dict()
-            print(f"*** {cont.value}")
             d['value'] = cont.value
         return d
 
+class Projects(db.Model):
+    __tablename__ = 'portfolio_projects'
+
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date)
+    project_n = db.Column(db.Integer) # This colum is the project number within the date
+    languageid = db.Column(db.Integer, db.ForeignKey('languages.id', name='fk_languageid'))
+    title = db.Column(db.String(50), index=True)
+    resume = db.Column(db.String(250), index=True)    
+    description = db.Column(db.String())   
+    resolution = db.Column(db.String())
+    keywords = db.Column(db.String(250), index=True)
+    link1 = db.Column(db.String(250))
+    link2 = db.Column(db.String(250))
+    link3 = db.Column(db.String(250))
+    link4 = db.Column(db.String(250))
+    link5 = db.Column(db.String(250))
+
+    def __repr__(self):
+        return '<Project {} {} {} {}>'.format(self.date, self.languageid, self.title, self.resume)
+    
+    def get_all():
+        return Projects.query.all()
+    
 @login.user_loader
 def load_user(id):
     return Users.query.get(int(id))
