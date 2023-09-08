@@ -26,3 +26,7 @@ class Config(object):
 
     PORTFOLIO_LOGIN_URL = os.environ.get('PORTFOLIO_LOGIN_URL') or 'login'
     PORTFOLIO_LOGOUT_URL = os.environ.get('PORTFOLIO_LOGOUT_URL') or 'logout'
+
+    # Projects per page
+
+    PROJECTS_PAGE = int(os.environ.get('PROJECTS_PAGE')) or 2

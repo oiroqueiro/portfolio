@@ -49,6 +49,9 @@ class Languages(db.Model):
     def upper(self):
         return self.language.upper()
     
+    def getid(lang):
+        return Languages.query.filter(Languages.language == lang).first().id
+    
 class Content(db.Model):
     __tablename__ = 'portfolio_content'
 
@@ -91,6 +94,9 @@ class Projects(db.Model):
     link3 = db.Column(db.String(250))
     link4 = db.Column(db.String(250))
     link5 = db.Column(db.String(250))
+    image1 = db.Column(db.String(50))
+    image2 = db.Column(db.String(50))
+    image3 = db.Column(db.String(50))
 
     def __repr__(self):
         return '<Project {} {} {} {}>'.format(self.date, self.languageid, self.title, self.resume)

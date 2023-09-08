@@ -77,13 +77,14 @@ def insert_projects(df):
     lang_id = Languages.query.filter(Languages.language == df['language'].lower()).first().id
 
     project_item = project_exists(df['date'],lang_id,df['project_n'])
-
+    
     if not project_item:        
         project_item = Projects(date=df['date'],languageid=lang_id,project_n=df['project_n'],
                                title=df['title'],resume=df['resume'],description=df['description'],
                                resolution=df['resolution'],keywords=df['keywords'],
                                link1=df['link1'],link2=df['link2'],link3=df['link3'],
-                               link4=df['link4'],link5=df['link5'])
+                               link4=df['link4'],link5=df['link5'],
+                               image1=df['image1'],image2=df['image2'],image3=df['image3'])
         db.session.add(project_item)       
     else:
         project_item.date = df['date']         
@@ -98,7 +99,10 @@ def insert_projects(df):
         project_item.link2 = df['link2']         
         project_item.link3 = df['link3']         
         project_item.link4 = df['link4']         
-        project_item.link5 = df['link5']         
+        project_item.link5 = df['link5']     
+        project_item.image1 = df['image1']    
+        project_item.image2 = df['image2']    
+        project_item.image3 = df['image3']    
 
     db.session.commit()
 
@@ -124,6 +128,7 @@ if __name__ == '__main__':
     # Insert/update the projects of the portfolio
 
     content_df = load_data('projects')     
+    content_df.replace(np.nan, '', inplace=True)
     content_df.apply(insert_projects,axis=1)
 
     

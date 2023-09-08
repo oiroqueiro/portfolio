@@ -3,7 +3,7 @@ from portfolio import portfolio, db
 from portfolio.emails import send_email
 from flask_login import current_user, login_user, logout_user
 from portfolio.forms import LoginForm
-from portfolio.models import Languages, Content, Users
+from portfolio.models import Languages, Content, Users, Projects
 
 portfolio.app_context().push()
 
@@ -82,9 +82,10 @@ def about(lang=None):
     skills_title = str(Content.get_value('about',lang,'skills_title')['value'] or '')
     skill1 = str(Content.get_value('about',lang,'skill1')['value'] or '')
     skill2 = str(Content.get_value('about',lang,'skill2')['value'] or '')
-    skill3 = str(Content.get_value('about',lang,'skill3')['value'] or '')
-    more = str(Content.get_value('about',lang,'more')['value'] or '')
+    skill3 = str(Content.get_value('about',lang,'skill3')['value'] or '')    
     youtube = str(Content.get_value('about',lang,'youtube')['value'] or '')
+
+    more = str(Content.get_value('',lang,'more')['value'] or '')
 
     return render_template('about/index.html', lang=lang, 
                            hello=hello, parragraph1=parragraph1, parragraph2=parragraph2, 
@@ -95,9 +96,33 @@ def about(lang=None):
 
 # projects
 
-@portfolio.route('/projects/')
-def projects():
-    return render_template('projects/index.html')
+@portfolio.route('/projects/', methods=['GET','POST'])
+@portfolio.route('/<lang>/projects/', methods=['GET','POST'])
+def projects(lang=None):
+    if lang is None:
+        lang = 'en'  # Set a default language if lang is not provided
+        
+    set_lang(lang)
+    langid = Languages.getid(lang)
+
+    more = str(Content.get_value('',lang,'more')['value'] or '')
+
+    page = request.args.get('page', 1, type=int)    
+
+    projs = Projects.query.filter(Projects.languageid==langid).order_by(Projects.date.desc(),
+                                   Projects.project_n.desc()).paginate(
+                                       page=page, per_page=portfolio.config['PROJECTS_PAGE'], 
+                                       error_out=False)
+    
+    next_url = url_for('projects', lang=lang, page=projs.next_num) \
+        if projs.has_next else None
+    
+    prev_url = url_for('projects', lang=lang, page=projs.prev_num) \
+        if projs.has_prev else None
+
+    return render_template('projects/index.html', lang=lang, projs=projs.items,
+                           page=page, next_url=next_url, prev_url=prev_url,
+                           more=more)
 
 # contact
 
