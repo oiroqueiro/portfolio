@@ -4,6 +4,7 @@ from portfolio.emails import send_email
 from flask_login import current_user, login_user, logout_user
 from portfolio.forms import LoginForm
 from portfolio.models import Languages, Content, Users, Projects
+import readtime
 
 portfolio.app_context().push()
 
@@ -40,7 +41,6 @@ def inject_data():
                 menu_manage_home=menu_manage_home, menu_manage_about=menu_manage_about,
                 menu_manage_projects=menu_manage_projects, menu_manage_contact=menu_manage_contact,
                 menu_manage_logout=menu_manage_logout, foot=foot)
-
 
 # index
 
@@ -105,7 +105,10 @@ def projects(lang=None):
     set_lang(lang)
     langid = Languages.getid(lang)
 
-    more = str(Content.get_value('',lang,'more')['value'] or '')
+    all_keywords, keywords_freq = Projects.get_all_keyws_and_freq(langid)    
+
+    keyw_title = str(Content.get_value('',lang,'keyw_title')['value'] or '')    
+    more = str(Content.get_value('',lang,'more')['value'] or '')    
 
     page = request.args.get('page', 1, type=int)    
 
@@ -113,7 +116,7 @@ def projects(lang=None):
                                    Projects.project_n.desc()).paginate(
                                        page=page, per_page=portfolio.config['PROJECTS_PAGE'], 
                                        error_out=False)
-    
+
     next_url = url_for('projects', lang=lang, page=projs.next_num) \
         if projs.has_next else None
     
@@ -122,7 +125,26 @@ def projects(lang=None):
 
     return render_template('projects/index.html', lang=lang, projs=projs.items,
                            page=page, next_url=next_url, prev_url=prev_url,
-                           more=more)
+                           more=more, all_keywords=all_keywords, 
+                           keywords_freq=keywords_freq, keyw_title=keyw_title)
+"""
+@portfolio.route('/project/<int:proj_id>/', methods=['GET','POST'])
+@portfolio.route('/<lang>/project/<int:proj_id>/', methods=['GET','POST'])
+def project_det(lang=None, proj_id=0):
+    if lang is None:
+        lang = 'en'  # Set a default language if lang is not provided
+        
+    set_lang(lang)
+    langid = Languages.getid(lang)
+
+    project = Projects.query.filter(Projects.languageid==langid, Projects.id==proj_id).first()
+
+    print(f"*** {lang}")
+    print(f"*** {proj_id}")
+    print(f"*** {project}")
+    return render_template('projects/proj_detail.html', lang=lang, proj_id=proj_id, project=project)
+"""    
+
 
 # contact
 

@@ -73,11 +73,13 @@ def insert_projects(df):
     when I have time to improve the project, I will give the option of 
     doing it using the own website   
     """
+    
+    df['keywords'] = df['keywords'].lower()
 
     lang_id = Languages.query.filter(Languages.language == df['language'].lower()).first().id
 
     project_item = project_exists(df['date'],lang_id,df['project_n'])
-    
+        
     if not project_item:        
         project_item = Projects(date=df['date'],languageid=lang_id,project_n=df['project_n'],
                                title=df['title'],resume=df['resume'],description=df['description'],
@@ -94,7 +96,7 @@ def insert_projects(df):
         project_item.resume = df['resume']         
         project_item.desccription = df['description']         
         project_item.resolution = df['resolution']         
-        project_item.keywords = df['keywords']         
+        project_item.keywords = df['keywords']
         project_item.link1 = df['link1']         
         project_item.link2 = df['link2']         
         project_item.link3 = df['link3']         

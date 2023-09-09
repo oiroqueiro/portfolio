@@ -1,6 +1,7 @@
 from portfolio import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from collections import Counter
 
 class Users(UserMixin, db.Model):
     _tablename__ = 'users'
@@ -104,6 +105,24 @@ class Projects(db.Model):
     def get_all():
         return Projects.query.all()
     
+    def get_all_keyws_and_freq(langid):
+        """This function will get all the keywords of the projects
+        and will calculate their frequencies
+        
+        Keyword arguments:
+        
+        Return: one tuple with the distinct keywords and one dictionary with the frequencies
+        """
+        
+        all_keyw = [tp.strip() for tuples in Projects.query
+                    .filter(Projects.languageid == langid)
+                    .with_entities(Projects.keywords).all() for tp in tuples[0].split(',')]
+
+        keyws = sorted(tuple(set(all_keyw)))
+
+        keyws_freq = dict(Counter(all_keyw))        
+
+        return keyws, keyws_freq
 @login.user_loader
 def load_user(id):
     return Users.query.get(int(id))

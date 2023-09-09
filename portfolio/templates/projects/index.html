@@ -30,23 +30,28 @@
       
                 <div class="card-body">
                   <ul class="post-meta mb-2">
-                    
-                    <li><a class="text-uppercase" href="/iwriter-hugo/categories/lifestyle">
-                      {{ proj.keywords }}
-                    </a></li>
+
+                    {% set keyw_list = proj.keywords.split(',') %}                          
+                    <li>
+                      |                      
+                      {% for keyw in keyw_list %}
+                        <a class="text-uppercase" href="/iwriter-hugo/categories/lifestyle">{{ keyw }}</a>
+                        | 
+                      {% endfor %}
+                    </li>
                     
                   </ul>
-                  <h2 class="h3 fw-light mb-3"><a class="post-title" href="/iwriter-hugo/blog/post-4/">{{ proj.title }} </a></h2>
+
+                  <h2 class="h3 fw-light mb-3"><a class="post-title" href="{{ url_for('projects', _external=True, lang=lang, page=page) }}">{{ proj.title }} </a></h2>
                   <p class="card-text mb-4">{{ proj.resume }}</p>
-                  <a class="btn btn-outline-primary btn-sm" href="/iwriter-hugo/blog/post-4/">{{ more }}</a>
+                  <a class="btn btn-outline-primary btn-sm" href="{{ url_for('projects', _external=True, lang=lang, page=page) }}">{{ more }}</a>
+
                 </div>
               </div>
             </div>
           
           {% endfor %}
-        </div>
-
-        
+        </div>        
 
         <nav aria-label="Page navigation">
           <ul class="pagination align-items-center justify-content-center">
@@ -79,9 +84,6 @@
       <div class="col-lg-4">
         <div class="bg-body ms-xl-3 p-4 rounded">
           
-          
-
-<!-- SIDE 
           <div class="widget">
             <form action="/iwriter-hugo/search" class="widget-search mt-2">
               <input class="px-3" id="search-query" name="s" type="search" placeholder="Search here" required>
@@ -92,118 +94,22 @@
               </button>
             </form>
           </div>
-
-
-
+          
           <div class="widget">
-            <h5 class="widget-title"><span>categories</span></h5>
-            
-            
+            <h5 class="widget-title"><span>{{ keyw_title }}</span></h5>                        
 
             <ul class="row g-2 list-unstyled">
-              
-              <li class="col">
-                <a class="d-flex justify-content-between align-items-center bg-white rounded px-3 py-2" href="/iwriter-hugo/categories/education/">Education  <span class="badge rounded ms-2">(1)</span> </a>
-              </li>
-              
-              <li class="col">
-                <a class="d-flex justify-content-between align-items-center bg-white rounded px-3 py-2" href="/iwriter-hugo/categories/hobby/">Hobby  <span class="badge rounded ms-2">(1)</span> </a>
-              </li>
-              
-              <li class="col">
-                <a class="d-flex justify-content-between align-items-center bg-white rounded px-3 py-2" href="/iwriter-hugo/categories/lifestyle/">Lifestyle  <span class="badge rounded ms-2">(3)</span> </a>
-              </li>
-              
-              <li class="col">
-                <a class="d-flex justify-content-between align-items-center bg-white rounded px-3 py-2" href="/iwriter-hugo/categories/nature/">Nature  <span class="badge rounded ms-2">(1)</span> </a>
-              </li>
-              
-              <li class="col">
-                <a class="d-flex justify-content-between align-items-center bg-white rounded px-3 py-2" href="/iwriter-hugo/categories/travel/">Travel  <span class="badge rounded ms-2">(2)</span> </a>
-              </li>
-              
-            </ul>
 
-            
-            
+              {% for keyword in all_keywords %}
+                <li class="col">
+                  <a class="d-flex justify-content-between align-items-center bg-white rounded px-3 py-2" href="/iwriter-hugo/categories/education/">{{ keyword }}  <span class="badge rounded ms-2">({{ keywords_freq[keyword] }})</span> </a>
+                </li>
+                
+              {% endfor %}
+            </ul>                        
           </div>
-
-
-          <div class="widget recent-post">
-            <h5 class="widget-title"><span>latest article</span></h5>
-            
-            
-            <div class="card bg-white p-2 widget-list mb-3">
-              <div class="row g-0 align-items-center">
-                
-                <div class="col-3">
-                  <a href="/iwriter-hugo/blog/post-2/">
-                    
-
-          <img  src="/iwriter-hugo/images/blog/02_hu8310be86230de8f4737010d31340e27e_41002_90x80_crop_q90_h2_box_smart1.webp" loading="lazy" decoding="async"  alt="" class=" rounded img-fluid" width="90" height="80" onerror="this.onerror='null';this.src='\/iwriter-hugo\/images\/blog\/02_hu8310be86230de8f4737010d31340e27e_41002_90x80_crop_q90_box_smart1.jpg'">
-
-                  </a>
-                </div>
-                
-                <div class="col-9">
-                  <div class="card-body p-0 ps-4">
-                    <h5 class="h6 mb-0 fw-light lh-sm mt-1"><a href="/iwriter-hugo/blog/post-2/">Do what you can, with you have, where you are</a></h5>
-                    <small>October 1, 2021</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="card bg-white p-2 widget-list mb-3">
-              <div class="row g-0 align-items-center">
-                
-                <div class="col-3">
-                  <a href="/iwriter-hugo/blog/post-1/">
-                    
-          <img  src="/iwriter-hugo/images/blog/01_hud1f99938d1b97ffb5c09fd961512365f_175524_90x80_crop_q90_h2_box_smart1.webp" loading="lazy" decoding="async"  alt="" class=" rounded img-fluid" width="90" height="80" onerror="this.onerror='null';this.src='\/iwriter-hugo\/images\/blog\/01_hud1f99938d1b97ffb5c09fd961512365f_175524_90x80_crop_q90_box_smart1.jpg'">
-
-                  </a>
-                </div>
-                
-                <div class="col-9">
-                  <div class="card-body p-0 ps-4">
-                    <h5 class="h6 mb-0 fw-light lh-sm mt-1"><a href="/iwriter-hugo/blog/post-1/">That which does not kill us makes us stronger</a></h5>
-                    <small>October 1, 2021</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="card bg-white p-2 widget-list mb-3">
-              <div class="row g-0 align-items-center">
-                
-                <div class="col-3">
-                  <a href="/iwriter-hugo/blog/post-3/">
-                    
-          <img  src="/iwriter-hugo/images/blog/03_hu27e03278e0f36b2d14fc3060d870d245_185296_90x80_crop_q90_h2_box_smart1.webp" loading="lazy" decoding="async"  alt="" class=" rounded img-fluid" width="90" height="80" onerror="this.onerror='null';this.src='\/iwriter-hugo\/images\/blog\/03_hu27e03278e0f36b2d14fc3060d870d245_185296_90x80_crop_q90_box_smart1.jpg'">
-
-                  </a>
-                </div>
-                
-                <div class="col-9">
-                  <div class="card-body p-0 ps-4">
-                    <h5 class="h6 mb-0 fw-light lh-sm mt-1"><a href="/iwriter-hugo/blog/post-3/">That which does not kill us makes us stronger</a></h5>
-                    <small>October 1, 2021</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-          </div>
-
         </div>
-      </div>      
--->
-
-
-
-
-
+      </div>
     </div>
   </div>
 </section>
