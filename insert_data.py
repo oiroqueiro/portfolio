@@ -82,19 +82,23 @@ def insert_projects(df):
         
     if not project_item:        
         project_item = Projects(date=df['date'],languageid=lang_id,project_n=df['project_n'],
-                               title=df['title'],resume=df['resume'],description=df['description'],
-                               resolution=df['resolution'],keywords=df['keywords'],
+                               title=df['title'],title_slug=Projects.set_title_slug(df['title']),
+                               resume=df['resume'],exposition=df['exposition'],
+                               action=df['action'],resolution=df['resolution'],keywords=df['keywords'],
                                link1=df['link1'],link2=df['link2'],link3=df['link3'],
                                link4=df['link4'],link5=df['link5'],
                                image1=df['image1'],image2=df['image2'],image3=df['image3'])
-        db.session.add(project_item)       
+
+        db.session.add(project_item)   
     else:
         project_item.date = df['date']         
         project_item.project_n = df['project_n']         
         project_item.languageid = lang_id
-        project_item.title = df['title']         
+        project_item.title = df['title']   
+        project_item.item_slug = Projects.set_title_slug(df['title'])          
         project_item.resume = df['resume']         
-        project_item.desccription = df['description']         
+        project_item.exposition = df['exposition']    
+        project_item.action = df['action']     
         project_item.resolution = df['resolution']         
         project_item.keywords = df['keywords']
         project_item.link1 = df['link1']         
@@ -104,8 +108,8 @@ def insert_projects(df):
         project_item.link5 = df['link5']     
         project_item.image1 = df['image1']    
         project_item.image2 = df['image2']    
-        project_item.image3 = df['image3']    
-
+        project_item.image3 = df['image3']
+         
     db.session.commit()
 
 if __name__ == '__main__':

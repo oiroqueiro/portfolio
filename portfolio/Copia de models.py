@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from collections import Counter
 from slugify import slugify
+from sqlalchemy.exc import IntegrityError
 
 class Users(UserMixin, db.Model):
     _tablename__ = 'users'
@@ -89,9 +90,9 @@ class Projects(db.Model):
     title = db.Column(db.String(50), index=True)
     title_slug = db.Column(db.String(60), unique=True, nullable=False)
     resume = db.Column(db.String(250), index=True)    
-    exposition = db.Column(db.String())   
-    action = db.Column(db.String())
-    resolution = db.Column(db.String())
+    exposition = db.Column(db.String(), index=True)   
+    action = db.Column(db.String(), index=True)
+    resolution = db.Column(db.String(), index=True)
     keywords = db.Column(db.String(250), index=True)
     link1 = db.Column(db.String(250))
     link2 = db.Column(db.String(250))
@@ -109,8 +110,8 @@ class Projects(db.Model):
         return Projects.query.filter(Projects.id == proj_id, Projects.languageid == lang_id).first()
     
     def get_by_slug(slug):
-        return Projects.query.filter(Projects.title_slug == slug).first()
-    
+        return Projects.query.filter(Projects.title_slug==slug).first()
+
     def get_all():
         return Projects.query.all()
     
@@ -133,19 +134,18 @@ class Projects(db.Model):
 
         return keyws, keyws_freq
     
-    def set_title_slug(title):
-        title_slug = f"{slugify(title)}"
+    def set_title_slug(self):
+        self.title_slug = slugify(self.title)
         saved = False
         count = 0
         while not saved:
-            if not Projects.get_by_slug(title_slug):
+            try:
+                db.session.commit()
                 saved = True
-            else:
+            except IntegrityError:
                 count += 1
-                title_slug = f"{slugify(title)}-{count}"
-      
-        return title_slug
-    
+                self_title_slug = f"{slugify(self.title)}-{count}"
+
 @login.user_loader
 def load_user(id):
     return Users.query.get(int(id))
