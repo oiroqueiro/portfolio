@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
+from flaskext.markdown import Markdown
 
 portfolio = Flask(__name__)
 portfolio.config.from_object(Config)
@@ -19,5 +20,8 @@ migrate = Migrate(portfolio, db)
 # Login
 csrf = CSRFProtect(portfolio)
 login = LoginManager(portfolio)
+
+# Markdown for the detail of the project
+Markdown(portfolio)
 
 from portfolio import routes, models

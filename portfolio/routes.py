@@ -132,14 +132,17 @@ def projects(lang=None):
 @portfolio.route('/<lang>/projects/<project_id>/')
 def project(lang=None, project_id=0):
     if lang is None:
-        lang = 'en'  # Set a default language if lang is not provided
-        
+        lang = 'en'  # Set a default language if lang is not provided         
+
     set_lang(lang)
     langid = Languages.getid(lang)
 
+    keyw_title = str(Content.get_value('',lang,'keyw_title')['value'] or '')    
     project = Projects.get_by_id(langid, int(project_id))
-    
-    return render_template('projects/project_detail.html', lang=lang, project=project) 
+    time_reading = readtime.of_markdown(" ".join([project.resume, project.description, project.resolution]))
+
+    return render_template('projects/project_detail.html', lang=lang, 
+                           project=project, keyw_title=keyw_title, time_reading=time_reading) 
     
 
 # contact

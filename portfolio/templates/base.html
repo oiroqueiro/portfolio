@@ -202,7 +202,10 @@
 
           <select class="m-2 me-0 border-0 bg-transparent select-language d-none d-lg-inline-block" id="select-language" onchange="location = this.value;">
             {% for language in languages %}
+              
               <option id="{{ language }}" value="{{ url_for(request.endpoint, _external=True, lang=language, project_id=project_id) }}" {% if lang == language %}selected{% endif %}>{{ language.upper() }}</option>  
+              {{ url_for(request.endpoint, _external=True, lang=language, project_id=project_id) }}
+              
             {% endfor %}
           </select>
 

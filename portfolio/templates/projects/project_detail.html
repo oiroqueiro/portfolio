@@ -3,8 +3,56 @@
  
 {% block content %}
 
+    <section class="section bg-white">
+        <div class="container">
+          <div class="row section pt-0">
+            <div class="col-12 col-lg-9 mx-auto">
 
-    {{ project.id }} - {{ project.title }}
+                <picture>
+                    <source  srcset="{{ url_for('static', filename='img/projects/') }}{{ project.image1 }}_545x0_resize_q90_h2_box.webp"  media="(max-width: 575px)">
+                    <source  srcset="{{ url_for('static', filename='img/projects/') }}{{ project.image1 }}_600x0_resize_q90_h2_box.webp"  media="(max-width: 767px)">
+                    <source  srcset="{{ url_for('static', filename='img/projects/') }}{{ project.image1 }}_700x0_resize_q90_h2_box.webp"  media="(max-width: 991px)">
+                    <source  srcset="{{ url_for('static', filename='img/projects/') }}{{ project.image1 }}_1110x0_resize_q90_h2_box.webp" >
+                    <img  loading="lazy" decoding="async" src="{{ url_for('static', filename='img/projects/') }}{{ project.image1 }}_1110x0_resize_q90_box.jpg"class=" w-100 card-img-top img-fluid" alt="" width="1200" height="800">
+                </picture>
+       
+                <div class="mb-4">
+                    <h1 class="h2 fw-light mb-3">{{ project.title }}</h1>
+                    <div class="d-flex">
+                    <span>{{ project.date }}</span>
+                    <span class="px-3">|</span>
+                    <!--
+                    <span>3 minutes read</span>
+                    -->
+                    <span>{{ time_reading }}</span>
+
+                    <ul class="post-meta list-unstyle">
+                        <li class="text-capitalize ms-4">{{ keyw_title }} :
+
+                            {% set keyw_list = project.keywords.split(',') %}
+                            <span class="px-1">|</span>  
+                            {% for keyw in keyw_list %}                    
+                                <a class="text-uppercase" href="{{ url_for('project', _external=True, lang=lang, project_id=project.id) }}">{{ keyw }}</a>
+                                <span class="px-1">|</span> 
+                            {% endfor %}
+                                                 
+                        </li>
+                                           
+                    </ul>
+                </div>
+        
+                <div class="content">
+                    <p>{{ project.description|markdown }}</p>
+                    <blockquote>
+                    <p>{{ project.resume|markdown }}</p>
+                    </blockquote>
+                    <p>{{ project.resolution|markdown }}</p>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+
 
 
 {% endblock %}

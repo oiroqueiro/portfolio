@@ -33,17 +33,17 @@
 
                     {% set keyw_list = proj.keywords.split(',') %}                          
                     <li>
-                      |                      
+                      <span class="px-1">|</span>                      
                       {% for keyw in keyw_list %}
                         <a class="text-uppercase" href="{{ url_for('projects', _external=True, lang=lang, page=page) }}">{{ keyw }}</a>
-                        | 
+                        <span class="px-1">|</span> 
                       {% endfor %}
                     </li>
                     
                   </ul>
                   
                   <h2 class="h3 fw-light mb-3"><a class="post-title" href="{{ url_for('project', lang=lang, project_id=proj.id) }}">{{ proj.title }} </a></h2>
-                  <p class="card-text mb-4">{{ proj.resume }}</p>
+                  <p class="card-text mb-4">{{ proj.resume|markdown }}</p>
                   <a class="btn btn-outline-primary btn-sm" href="{{ url_for('project', lang=lang, project_id=proj.id) }}">{{ more }}</a>
 
                 </div>
