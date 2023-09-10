@@ -102,6 +102,9 @@ class Projects(db.Model):
     def __repr__(self):
         return '<Project {} {} {} {}>'.format(self.date, self.languageid, self.title, self.resume)
     
+    def get_by_id(lang_id, proj_id):
+        return Projects.query.filter(Projects.id == proj_id, Projects.languageid == lang_id).first()
+    
     def get_all():
         return Projects.query.all()
     
@@ -123,6 +126,7 @@ class Projects(db.Model):
         keyws_freq = dict(Counter(all_keyw))        
 
         return keyws, keyws_freq
+    
 @login.user_loader
 def load_user(id):
     return Users.query.get(int(id))

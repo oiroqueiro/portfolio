@@ -127,24 +127,20 @@ def projects(lang=None):
                            page=page, next_url=next_url, prev_url=prev_url,
                            more=more, all_keywords=all_keywords, 
                            keywords_freq=keywords_freq, keyw_title=keyw_title)
-"""
-@portfolio.route('/project/<int:proj_id>/', methods=['GET','POST'])
-@portfolio.route('/<lang>/project/<int:proj_id>/', methods=['GET','POST'])
-def project_det(lang=None, proj_id=0):
+
+@portfolio.route('/projects/<project_id>/')
+@portfolio.route('/<lang>/projects/<project_id>/')
+def project(lang=None, project_id=0):
     if lang is None:
         lang = 'en'  # Set a default language if lang is not provided
         
     set_lang(lang)
     langid = Languages.getid(lang)
 
-    project = Projects.query.filter(Projects.languageid==langid, Projects.id==proj_id).first()
-
-    print(f"*** {lang}")
-    print(f"*** {proj_id}")
-    print(f"*** {project}")
-    return render_template('projects/proj_detail.html', lang=lang, proj_id=proj_id, project=project)
-"""    
-
+    project = Projects.get_by_id(langid, int(project_id))
+    
+    return render_template('projects/project_detail.html', lang=lang, project=project) 
+    
 
 # contact
 
