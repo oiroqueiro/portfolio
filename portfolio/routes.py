@@ -184,13 +184,14 @@ def project(lang=None, title_slug=None):
     if lang is None:
         lang = 'en'  # Set a default language if lang is not provided
 
+    project = Projects.get_by_slug(Languages.getid(lang), title_slug)
+
     set_slug(title_slug)
     set_lang(lang)
 
     keyw_title = str(Content.get_value('', lang, 'keyw_title')['value'] or '')
     read = str(Content.get_value('', lang, 'read')['value'] or '')
 
-    project = Projects.get_by_slug(title_slug)
     time_reading = str(readtime.
                        of_markdown(" ".join([project.resume,
                                              project.exposition,

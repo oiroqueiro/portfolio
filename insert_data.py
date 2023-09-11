@@ -20,9 +20,11 @@ def content_exists(c_template, c_langid, c_var):
     else:
         return False
     
-def project_exists(c_date, c_langid, c_projn):    
-    proj_item = Projects.query.filter(Projects.date == c_date, Projects.languageid == c_langid, 
-                                            Projects.project_n == c_projn).first()
+def project_exists(p_date, p_projn, p_langid, p_slug):    
+    proj_item = Projects.query.filter(Projects.date == p_date, 
+                                      Projects.project_n == p_projn, 
+                                      Projects.languageid == p_langid, 
+                                      Projects.title_slug == p_slug).first()
     if proj_item:
         return proj_item
     else:
@@ -77,17 +79,19 @@ def insert_projects(df):
     df['keywords'] = df['keywords'].lower()
 
     lang_id = Languages.query.filter(Languages.language == df['language'].lower()).first().id
-
-    project_item = project_exists(df['date'],lang_id,df['project_n'])
+    title_slug = Projects.set_title_slug(lang_id,df['title'])
+    project_item = project_exists(df['date'],df['project_n'],lang_id,title_slug)
         
-    if not project_item:        
+    if not project_item:               
         project_item = Projects(date=df['date'],languageid=lang_id,project_n=df['project_n'],
-                               title=df['title'],title_slug=Projects.set_title_slug(df['title']),
+                               title=df['title'],title_slug=title_slug,
                                resume=df['resume'],exposition=df['exposition'],
                                action=df['action'],resolution=df['resolution'],keywords=df['keywords'],
                                link1=df['link1'],link2=df['link2'],link3=df['link3'],
                                link4=df['link4'],link5=df['link5'],
                                image1=df['image1'],image2=df['image2'],image3=df['image3'])
+
+        project_item.image1 = f"<img loading='lazy' decoding='async' src='{{ url_for('static', filename='img/projects/{df['image1']}.jpg') }}' class=' w-100 card-img-top img-fluid' alt='' width='1200' height='800'>"
 
         db.session.add(project_item)   
     else:
@@ -95,7 +99,7 @@ def insert_projects(df):
         project_item.project_n = df['project_n']         
         project_item.languageid = lang_id
         project_item.title = df['title']   
-        project_item.item_slug = Projects.set_title_slug(df['title'])          
+        project_item.item_slug = title_slug          
         project_item.resume = df['resume']         
         project_item.exposition = df['exposition']    
         project_item.action = df['action']     
@@ -109,6 +113,7 @@ def insert_projects(df):
         project_item.image1 = df['image1']    
         project_item.image2 = df['image2']    
         project_item.image3 = df['image3']
+        project_item.image1 = f"<img loading='lazy' decoding='async' src='{{ url_for('static', filename='img/projects/{df['image1']}.jpg') }}' class=' w-100 card-img-top img-fluid' alt='' width='1200' height='800'>"
          
     db.session.commit()
 
