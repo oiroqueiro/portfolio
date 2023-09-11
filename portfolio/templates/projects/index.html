@@ -35,16 +35,16 @@
                     <li>
                       <span class="px-1">|</span>                      
                       {% for keyw in keyw_list %}
-                        <a class="text-uppercase" href="{{ url_for('projects', _external=True, lang=lang, page=page) }}">{{ keyw }}</a>
+                        <a class="text-uppercase" href="{{ url_for('projects', _external=True, lang=lang, keyw=keyw, page=page) }}">{{ keyw }}</a>
                         <span class="px-1">|</span> 
                       {% endfor %}
                     </li>
                     
                   </ul>
                   
-                  <h2 class="h3 fw-light mb-3"><a class="post-title" href="{{ url_for('project', lang=lang, project_id=proj.id) }}">{{ proj.title }} </a></h2>
+                  <h2 class="h3 fw-light mb-3"><a class="post-title" href="{{ url_for('project', lang=lang, title_slug=proj.title_slug) }}">{{ proj.title }} </a></h2>
                   <p class="card-text mb-4">{{ proj.resume|markdown }}</p>
-                  <a class="btn btn-outline-primary btn-sm" href="{{ url_for('project', lang=lang, project_id=proj.id) }}">{{ more }}</a>
+                  <a class="btn btn-outline-primary btn-sm" href="{{ url_for('project', lang=lang, title_slug=proj.title_slug) }}">{{ more }}</a>
 
                 </div>
               </div>
@@ -58,7 +58,7 @@
           
             {% if prev_url %}
             <li class="page-item prev d-flex align-items-center">
-              <a class="page-link arrow" href="{{ prev_url }}" aria-label="Pagination">Previous<i
+              <a class="page-link arrow" href="{{ prev_url }}" aria-label="Pagination">{{ previous }}<i
                   class="fas fa-arrow-left ms-3"></i>
               </a>
             </li>
@@ -70,7 +70,7 @@
 
             {% if next_url %}
             <li class="page-item next d-flex align-items-center">
-              <a class="page-link arrow" href="{{ next_url }}" aria-label="Pagination">Next<i
+              <a class="page-link arrow" href="{{ next_url }}" aria-label="Pagination">{{ next }}<i
                   class="fas fa-arrow-right ms-3"></i>
               </a>
             </li>
@@ -102,7 +102,7 @@
 
               {% for keyword in all_keywords %}
                 <li class="col">
-                  <a class="d-flex justify-content-between align-items-center bg-white rounded px-3 py-2" href="/iwriter-hugo/categories/education/">{{ keyword }}  <span class="badge rounded ms-2">({{ keywords_freq[keyword] }})</span> </a>
+                  <a class="d-flex justify-content-between align-items-center bg-white rounded px-3 py-2" href="{{ url_for('projects', _external=True, lang=lang, keyw=keyword, page=page) }}">{{ keyword }}  <span class="badge rounded ms-2">({{ keywords_freq[keyword] }})</span> </a>
                 </li>
                 
               {% endfor %}

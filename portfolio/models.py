@@ -87,7 +87,7 @@ class Projects(db.Model):
     project_n = db.Column(db.Integer) # This colum is the project number within the date
     languageid = db.Column(db.Integer, db.ForeignKey('languages.id', name='fk_languageid'))
     title = db.Column(db.String(50), index=True)
-    title_slug = db.Column(db.String(60), unique=True, nullable=False)
+    title_slug = db.Column(db.String(60), unique=True, nullable=False, index=True)
     resume = db.Column(db.String(250), index=True)    
     exposition = db.Column(db.String())   
     action = db.Column(db.String())

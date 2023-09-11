@@ -32,7 +32,7 @@
                             {% set keyw_list = project.keywords.split(',') %}
                             <span class="px-1">|</span>  
                             {% for keyw in keyw_list %}                    
-                                <a class="text-uppercase" href="{{ url_for('project', _external=True, lang=lang, project_id=project.id) }}">{{ keyw }}</a>
+                                <a class="text-uppercase" href="{{ url_for('projects', _external=True, lang=lang, keyw=keyw, title_slug=title_slug) }}">{{ keyw }}</a>
                                 <span class="px-1">|</span> 
                             {% endfor %}
                                                  
@@ -42,9 +42,9 @@
                 </div>
         
                 <div class="content">
-                    <p>{{ project.description|markdown }}</p>
+                    <p>{{ project.exposition|markdown }}</p>
                     <blockquote>
-                    <p>{{ project.resume|markdown }}</p>
+                    <p>{{ project.action|markdown }}</p>
                     </blockquote>
                     <p>{{ project.resolution|markdown }}</p>
                     
