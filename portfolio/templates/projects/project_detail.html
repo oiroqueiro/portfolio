@@ -7,15 +7,14 @@
         <div class="container">
           <div class="row section pt-0">
             <div class="col-12 col-lg-9 mx-auto">
-
                 <picture>
-                    <source  srcset="{{ url_for('static', filename='img/projects/') }}{{ project.image1 }}_545x0_resize_q90_h2_box.webp"  media="(max-width: 575px)">
-                    <source  srcset="{{ url_for('static', filename='img/projects/') }}{{ project.image1 }}_600x0_resize_q90_h2_box.webp"  media="(max-width: 767px)">
-                    <source  srcset="{{ url_for('static', filename='img/projects/') }}{{ project.image1 }}_700x0_resize_q90_h2_box.webp"  media="(max-width: 991px)">
-                    <source  srcset="{{ url_for('static', filename='img/projects/') }}{{ project.image1 }}_1110x0_resize_q90_h2_box.webp" >
-                    <img  loading="lazy" decoding="async" src="{{ url_for('static', filename='img/projects/') }}{{ project.image1 }}_1110x0_resize_q90_box.jpg"class=" w-100 card-img-top img-fluid" alt="" width="1200" height="800">
+                    <source  srcset="{{ url_for('static', filename='img/projects/') }}{{ project.image_title }}_545x.webp"  media="(max-width: 575px)">
+                    <source  srcset="{{ url_for('static', filename='img/projects/') }}{{ project.image_title }}_600x.webp"  media="(max-width: 767px)">
+                    <source  srcset="{{ url_for('static', filename='img/projects/') }}{{ project.image_title }}_700x.webp"  media="(max-width: 991px)">
+                    <source  srcset="{{ url_for('static', filename='img/projects/') }}{{ project.image_title }}_1110x.webp" >
+                    <img  loading="lazy" decoding="async" src="{{ url_for('static', filename='img/projects/') }}{{ project.image_title }}_1110.jpg"class=" w-100 card-img-top img-fluid" alt="" width="1200" height="800">
                 </picture>
-       
+
                 <div class="mb-4">
                     <h1 class="h2 fw-light mb-3">{{ project.title }}</h1>
                     <div class="d-flex">
@@ -32,7 +31,7 @@
                             {% set keyw_list = project.keywords.split(',') %}
                             <span class="px-1">|</span>  
                             {% for keyw in keyw_list %}                    
-                                <a class="text-uppercase" href="{{ url_for('projects', _external=True, lang=lang, keyw=keyw, title_slug=title_slug) }}">{{ keyw }}</a>
+                                <a class="text-uppercase" href="{{ url_for('projects', _external=True, lang=lang, keyw=keyw, proj_date=project.date, proj_n=project_project_n) }}">{{ keyw }}</a>
                                 <span class="px-1">|</span> 
                             {% endfor %}
                                                  
@@ -47,8 +46,8 @@
                     </blockquote>
                     <p>{{ project.exposition|markdown }}</p>
                     <p>{{ project.action|markdown }}</p>
-                    <p>{{ project.resolution|markdown }}</p>
-                    
+                    <p>{{ text|markdown }}</p>
+   
                 </div>
             </div>
         </div>

@@ -14,13 +14,12 @@
             <div class="col">
               <div class="blog-card card mb-3">
                 <div class="card-img position-relative">
-                  
                   <picture>
-                    <source  srcset="{{ url_for('static', filename='img/projects/') }}{{ proj.image1 }}_545x0_resize_q90_h2_box.webp"  media="(max-width: 575px)">
-                    <source  srcset="{{ url_for('static', filename='img/projects/') }}{{ proj.image1 }}_600x0_resize_q90_h2_box.webp"  media="(max-width: 767px)">
-                    <source  srcset="{{ url_for('static', filename='img/projects/') }}{{ proj.image1 }}_700x0_resize_q90_h2_box.webp"  media="(max-width: 991px)">
-                    <source  srcset="{{ url_for('static', filename='img/projects/') }}{{ proj.image1 }}_1110x0_resize_q90_h2_box.webp" >
-                    <img  loading="lazy" decoding="async" src="{{ url_for('static', filename='img/projects/') }}{{ proj.image1 }}_1110x0_resize_q90_box.jpg"class=" w-100 card-img-top img-fluid" alt="" width="1200" height="800">
+                    <source  srcset="{{ url_for('static', filename='img/projects/') }}{{ proj.image_title }}_545x.webp"  media="(max-width: 575px)">
+                    <source  srcset="{{ url_for('static', filename='img/projects/') }}{{ proj.image_title }}_600x.webp"  media="(max-width: 767px)">
+                    <source  srcset="{{ url_for('static', filename='img/projects/') }}{{ proj.image_title }}_700x.webp"  media="(max-width: 991px)">
+                    <source  srcset="{{ url_for('static', filename='img/projects/') }}{{ proj.image_title }}_1110x.webp" >
+                    <img  loading="lazy" decoding="async" src="{{ url_for('static', filename='img/projects/') }}{{ proj.image_title }}_1110.jpg"class=" w-100 card-img-top img-fluid" alt="" width="1200" height="800">
                   </picture>
                   
                   <div class="post-info">
@@ -42,9 +41,9 @@
                     
                   </ul>
                   
-                  <h2 class="h3 fw-light mb-3"><a class="post-title" href="{{ url_for('project', lang=lang, title_slug=proj.title_slug) }}">{{ proj.title }} </a></h2>
+                  <h2 class="h3 fw-light mb-3"><a class="post-title" href="{{ url_for('project', lang=lang, proj_date=proj.date, proj_n=proj.project_n, title_slug=proj.title_slug) }}">{{ proj.title }} </a></h2>
                   <p class="card-text mb-4">{{ proj.resume|markdown }}</p>
-                  <a class="btn btn-outline-primary btn-sm" href="{{ url_for('project', lang=lang, title_slug=proj.title_slug) }}">{{ more }}</a>
+                  <a class="btn btn-outline-primary btn-sm" href="{{ url_for('project', lang=lang, proj_date=proj.date, proj_n=proj.project_n, title_slug=proj.title_slug) }}">{{ more }}</a>
 
                 </div>
               </div>

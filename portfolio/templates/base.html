@@ -150,23 +150,23 @@
             
             <li class="nav-item active">
               <a class="nav-link" 
-                href="{{ url_for('index', _external=True, lang=lang) }}">{{ menu_home }}</a>
+                href="{{ url_for('index', _external=True, lang=lang, proj_date=proj_date) }}">{{ menu_home }}</a>
             </li>                 
                       
             
               <li class="nav-item ">
               <a class="nav-link" 
-                href="{{ url_for('about', _external=True, lang=lang) }}">{{ menu_about }}</a>
+                href="{{ url_for('about', _external=True, lang=lang, proj_date=proj_date) }}">{{ menu_about }}</a>
             </li>                
             
             <li class="nav-item ">
               <a class="nav-link" 
-                href="{{ url_for('projects', _external=True, lang=lang) }}">{{ menu_projects }}</a>
+                href="{{ url_for('projects', _external=True, lang=lang, keyw=keyw, proj_n=proj_n, proj_date=proj_date) }}">{{ menu_projects }}</a>
             </li>
 
             <li class="nav-item ">
               <a class="nav-link" 
-                href="{{ url_for('contact', _external=True, lang=lang) }}">{{ menu_contact }}</a>
+                href="{{ url_for('contact', _external=True, lang=lang, proj_date=proj_date) }}">{{ menu_contact }}</a>
             </li>          
                     
             {% if current_user.is_authenticated %}
@@ -176,20 +176,20 @@
                 <div class="dropdown-menu">
                                                               
                   <a class="dropdown-item " 
-                    href="{{ url_for('index', _external=True, lang=lang) }}">{{ menu_manage_home }}</a>                            
+                    href="{{ url_for('index', _external=True, lang=lang, proj_n=proj_n, proj_date=proj_date) }}">{{ menu_manage_home }}</a>                            
                   
                   <a class="dropdown-item " 
-                    href="{{ url_for('about', _external=True, lang=lang) }}">{{ menu_manage_about }}</a>
+                    href="{{ url_for('about', _external=True, lang=lang, proj_date=proj_date) }}">{{ menu_manage_about }}</a>
                   
                   <a class="dropdown-item " 
-                    href="{{ url_for('projects', _external=True, lang=lang) }}">{{ menu_manage_projects }}</a>
+                    href="{{ url_for('projects', _external=True, lang=lang, proj_date=proj_date) }}">{{ menu_manage_projects }}</a>
 
                   <a class="dropdown-item " 
-                    href="{{ url_for('contact', _external=True, lang=lang) }}">{{ menu_manage_contact }}</a>
+                    href="{{ url_for('contact', _external=True, lang=lang, proj_date=proj_date) }}">{{ menu_manage_contact }}</a>
 
                   <div class="border-top"></div>
 
-                  <a class="dropdown-item " href="{{ url_for('logout', _external=True, lang=lang) }}">
+                  <a class="dropdown-item " href="{{ url_for('logout', _external=True, lang=lang, proj_date=proj_date) }}">
                     <i class="fas fa-sign-out-alt"></i> {{ menu_manage_logout }}
                   </a>
                 </div>
@@ -203,7 +203,7 @@
           <select class="m-2 me-0 border-0 bg-transparent select-language d-none d-lg-inline-block" id="select-language" onchange="location = this.value;">
             {% for language in languages %}
               
-              <option id="{{ language }}" value="{{ url_for(request.endpoint, _external=True, lang=language, title_slug=title_slug) }}" {% if lang == language %}selected{% endif %}>{{ language.upper() }}</option>                
+              <option id="{{ language }}" value="{{ url_for(request.endpoint, _external=True, lang=language, proj_date=proj_date, proj_n=proj_n, title_slug=title_slug) }}" {% if lang == language %}selected{% endif %}>{{ language.upper() }}</option>                
               
             {% endfor %}
           </select>

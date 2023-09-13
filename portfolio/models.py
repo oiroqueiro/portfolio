@@ -106,18 +106,22 @@ class Projects(db.Model):
     link3 = db.Column(db.String(250))
     link4 = db.Column(db.String(250))
     link5 = db.Column(db.String(250))
-    image1 = db.Column(db.String(50))
-    image2 = db.Column(db.String(50))
-    image3 = db.Column(db.String(50))
+    image_title = db.Column(db.String(50))
+    image1 = db.Column(db.String())
+    image2 = db.Column(db.String())
+    image3 = db.Column(db.String())
 
     def __repr__(self):
         return '<Project {} {} {} {}>'.format(self.date, self.languageid, self.title, self.resume)
 
-    def get_by_id(lang_id, proj_id):
-        return Projects.query.filter(Projects.id == proj_id, Projects.languageid == lang_id).first()
+    def get_by_id(proj_id):
+        return Projects.query.filter(Projects.id == proj_id).first()
 
     def get_by_slug(lang_id, slug):
         return Projects.query.filter(Projects.languageid == lang_id, Projects.title_slug == slug).first()
+
+    def get_by_projn(lang_id, proj_n):
+        return Projects.query.filter(Projects.languageid == lang_id, Projects.project_n == proj_n).first()
 
     def get_all():
         return Projects.query.all()

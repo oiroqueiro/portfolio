@@ -11,19 +11,38 @@ portfolio.app_context().push()
 
 # Managing the context processor with multilanguage and title slugs for projects
 
-
 @portfolio.before_request
 def set_lang(lang=None):
     request.lang = request.args.get('lang', lang)
 
+def set_proj(proj_n=1):
+    """Since when the user can change the language, the webpage should to be the
+    same, I need to save a reference to the exact line for the language that
+    was changed, the id is different for every row (so if the user change the
+    language, cannot find the same id for different language), the title_slug
+    could change if the user wants to translate the titles, so I will use the
+    project_n with the date to define the project that needs to translate
+
+    Keyword arguments:
+    date date of the project
+    proj_n number of the project inside the date
+
+    """
+
+    request.proj_n = request.args.get('proj_n', proj_n)
+
+
+def set_date(proj_date=None):
+    request.proj_date = request.args.get('proj_date', proj_date)
 
 def set_slug(slug=None):
     request.title_slug = request.args.get('title_slug', slug)
 
-
 @portfolio.context_processor
 def inject_data():
     lang = request.lang
+    proj_n = request.proj_n
+    proj_date = request.proj_date
     title_slug = request.title_slug
 
     languages = list([str(l) for l in Languages.get_all()])
@@ -57,19 +76,54 @@ def inject_data():
                 menu_manage_projects=menu_manage_projects,
                 menu_manage_contact=menu_manage_contact,
                 menu_manage_logout=menu_manage_logout, foot=foot,
-                title_slug=title_slug)
+                proj_n=proj_n, proj_date=proj_date, title_slug=title_slug)
+
+# Functions
+
+def replace_image_tags(text, img_n, image):
+    '''
+    Function to replace the string <img>image(n)</img> with the html needed
+    to render the images in a responsive way
+
+    text: the text where need to replace
+    img_n: the number of image to replace (image1, image2 or image3)
+    image: the name of the image
+
+    return modified_text: the text ready to render
+    '''
+    
+    replacement_html = f'''<img loading="lazy" decoding="async" 
+                        src="{ url_for('static', filename='img/projects/') }{ image }_1110.jpg" 
+                        srcset="{ url_for('static', filename='img/projects/') }{ image }_545x.webp 545w,
+                                { url_for('static', filename='img/projects/') }{ image }_600x.webp 600w,
+                                { url_for('static', filename='img/projects/') }{ image }_700x.webp 700w,
+                                { url_for('static', filename='img/projects/') }{ image }_1110x.webp 1110w"
+                        sizes="(max-width: 575px) 545px,
+                                (max-width: 767px) 600px,
+                                (max-width: 991px) 700px,
+                                1110px"
+                        class="w-100 card-img-top img-fluid" 
+                        alt="{ image }" 
+                        width="1200" 
+                        height="800">'''
+
+    modified_text = text.replace(f"<img>{img_n}</img>", replacement_html)
+    return modified_text
+
+# Views
 
 # index
-
 
 @portfolio.route('/')
 @portfolio.route('/index/')
 @portfolio.route('/<lang>/index/')
-def index(lang=None, title_slug=None):
+def index(lang=None, proj_date=None, proj_n=1, title_slug=None):
     if lang is None:
         lang = 'en'  # Set a default language if lang is not provided
 
     set_lang(lang)
+    set_proj(proj_n)
+    set_date(proj_date)
     set_slug(title_slug)
 
     get_touch = Content.get_value('', lang, 'get_touch')['value']
@@ -86,11 +140,13 @@ def index(lang=None, title_slug=None):
 
 @portfolio.route('/about/')
 @portfolio.route('/<lang>/about/')
-def about(lang=None, title_slug=None):
+def about(lang=None, proj_date=None, proj_n=1, title_slug=None):
     if lang is None:
         lang = 'en'  # Set a default language if lang is not provided
 
     set_lang(lang)
+    set_proj(proj_n)
+    set_date(proj_date)
     set_slug(title_slug)
 
     hello = str(Content.get_value('about', lang, 'hello')['value'] or '')
@@ -130,12 +186,15 @@ def about(lang=None, title_slug=None):
 @portfolio.route('/projects/<keyw>/', methods=['GET', 'POST'])
 @portfolio.route('/<lang>/projects/', methods=['GET', 'POST'])
 @portfolio.route('/<lang>/projects/<keyw>/', methods=['GET', 'POST'])
-def projects(lang=None, keyw=None, title_slug=None):
+def projects(lang=None, proj_date=None, proj_n=1, title_slug=None, keyw=None):
     if lang is None:
         lang = 'en'  # Set a default language if lang is not provided
 
     set_lang(lang)
+    set_proj(proj_n)
+    set_date(proj_date)
     set_slug(title_slug)
+
     langid = Languages.getid(lang)
 
     all_keywords, keywords_freq = Projects.get_all_keyws_and_freq(langid)
@@ -162,57 +221,74 @@ def projects(lang=None, keyw=None, title_slug=None):
                   error_out=False)
     )
 
-    print(f"*** {keyw}")
-    [print(f"*** {p}") for p in projs.items]
-
-    next_url = url_for('projects', lang=lang, page=projs.next_num) \
+    next_url = url_for('projects', lang=lang, keyw=keyw, proj_n=proj_n,\
+                        proj_date=proj_date, page=projs.next_num) \
         if projs.has_next else None
 
-    prev_url = url_for('projects', lang=lang, page=projs.prev_num) \
+    prev_url = url_for('projects', lang=lang, proj_n=proj_n,\
+                        proj_date=proj_date, page=projs.prev_num) \
         if projs.has_prev else None
 
     return render_template('projects/index.html', lang=lang, projs=projs.items,
                            page=page, next_url=next_url, prev_url=prev_url,
                            more=more, previous=previous, next=next,
                            all_keywords=all_keywords,
-                           keywords_freq=keywords_freq, keyw_title=keyw_title)
+                           keywords_freq=keywords_freq, keyw_title=keyw_title,
+                           keyw=keyw, proj_n=proj_n, proj_date=proj_date)
 
 
-@portfolio.route('/project/<title_slug>/')
-@portfolio.route('/<lang>/project/<title_slug>/')
-def project(lang=None, title_slug=None):
+@portfolio.route('/project/<proj_date>/<proj_n>/<title_slug>/')
+@portfolio.route('/<lang>/project/<proj_date>/<proj_n>/<title_slug>/')
+def project(lang=None, proj_date=None, proj_n=1, title_slug=None):
     if lang is None:
         lang = 'en'  # Set a default language if lang is not provided
 
     project = Projects.get_by_slug(Languages.getid(lang), title_slug)
 
-    set_slug(title_slug)
     set_lang(lang)
+    set_proj(proj_n)
+    set_date(proj_date)
+    set_slug(title_slug)
 
     keyw_title = str(Content.get_value('', lang, 'keyw_title')['value'] or '')
     read = str(Content.get_value('', lang, 'read')['value'] or '')
 
     time_reading = str(readtime.
-                       of_markdown(" ".join([project.resume,
-                                             project.exposition,
-                                             project.action,
-                                             project.resolution]))
+                       of_markdown(" ".join(
+                           [project.resume if project.resume else '',
+                            project.exposition if project.exposition else '',
+                            project.action if project.action else '',
+                            project.resolution if project.resolution else '']))
                        ).replace('read', read)
 
+    # Create the replacements for the images
+
+    modified_text = replace_image_tags(project.resolution, 'image1', 
+                                       project.image1)
+    modified_text = replace_image_tags(modified_text, 'image2', 
+                                       project.image2)
+    modified_text = replace_image_tags(modified_text, 'image3', 
+                                       project.image3)
+    print(f"***{modified_text}")
+
     return render_template('projects/project_detail.html', lang=lang,
+                           proj_date=proj_date, proj_n=proj_n,
                            title_slug=title_slug, project=project,
-                           keyw_title=keyw_title, time_reading=time_reading)
+                           keyw_title=keyw_title, time_reading=time_reading,
+                           text=modified_text)
 
 
 # contact
 
 @portfolio.route('/contact/', methods=['GET', 'POST'])
 @portfolio.route('/<lang>/contact/', methods=['GET', 'POST'])
-def contact(lang=None, title_slug=None):
+def contact(lang=None, proj_date=None, proj_n=1, title_slug=None):
     if lang is None:
         lang = 'en'  # Set a default language if lang is not provided
 
     set_lang(lang)
+    set_proj(proj_n)
+    set_date(proj_date)
     set_slug(title_slug)
 
     title = str(Content.get_value('contact', lang, 'title')['value'] or '')
@@ -254,11 +330,13 @@ def contact(lang=None, title_slug=None):
                  methods=['GET', 'POST'])
 @portfolio.route(f"/<lang>/{portfolio.config['PORTFOLIO_LOGIN_URL']}/",
                  methods=['GET', 'POST'])
-def login(lang=None, title_slug=None):
+def login(lang=None, proj_date=None, proj_n=1, title_slug=None):
     if lang is None:
         lang = 'en'  # Set a default language if lang is not provided
 
     set_lang(lang)
+    set_proj(proj_n)
+    set_date(proj_date)
     set_slug(title_slug)
 
     if current_user.is_authenticated:
@@ -295,11 +373,13 @@ def login(lang=None, title_slug=None):
                  methods=['GET', 'POST'])
 @portfolio.route(f"/<lang>/{portfolio.config['PORTFOLIO_LOGOUT_URL']}/",
                  methods=['GET', 'POST'])
-def logout(lang=None, title_slug=None):
+def logout(lang=None, proj_date=None, proj_n=1, title_slug=None):
     if lang is None:
         lang = 'en'  # Set a default language if lang is not provided
 
     set_lang(lang)
+    set_proj(proj_n)
+    set_date(proj_date)
     set_slug(title_slug)
 
     logout_user()

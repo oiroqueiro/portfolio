@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from portfolio import portfolio, db
 from portfolio.models import Languages, Content, Projects
+import re
 
 def lang_exists(c_lang):
     cont_item = Languages.query.filter(Languages.language == c_lang).first()
@@ -20,16 +21,14 @@ def content_exists(c_template, c_langid, c_var):
     else:
         return False
     
-def project_exists(p_date, p_projn, p_langid, p_slug):    
-    proj_item = Projects.query.filter(Projects.date == p_date, 
-                                      Projects.project_n == p_projn, 
+def project_exists(p_date, p_langid, p_projn):    
+    proj_item = Projects.query.filter(Projects.date == p_date,                                       
                                       Projects.languageid == p_langid, 
-                                      Projects.title_slug == p_slug).first()
+                                      Projects.project_n == p_projn).first()
     if proj_item:
         return proj_item
     else:
         return False
-
 def load_data(sheet):
     return pd.read_excel(Path('secrets/content.xlsx'), sheet_name=sheet)
 
@@ -80,7 +79,7 @@ def insert_projects(df):
 
     lang_id = Languages.query.filter(Languages.language == df['language'].lower()).first().id
     title_slug = Projects.set_title_slug(lang_id,df['title'])
-    project_item = project_exists(df['date'],df['project_n'],lang_id,title_slug)
+    project_item = project_exists(df['date'],lang_id,df['project_n'])
         
     if not project_item:               
         project_item = Projects(date=df['date'],languageid=lang_id,project_n=df['project_n'],
@@ -89,9 +88,8 @@ def insert_projects(df):
                                action=df['action'],resolution=df['resolution'],keywords=df['keywords'],
                                link1=df['link1'],link2=df['link2'],link3=df['link3'],
                                link4=df['link4'],link5=df['link5'],
+                               image_title = df['image_title'],
                                image1=df['image1'],image2=df['image2'],image3=df['image3'])
-
-        project_item.image1 = f"<img loading='lazy' decoding='async' src='{{ url_for('static', filename='img/projects/{df['image1']}.jpg') }}' class=' w-100 card-img-top img-fluid' alt='' width='1200' height='800'>"
 
         db.session.add(project_item)   
     else:
@@ -109,12 +107,12 @@ def insert_projects(df):
         project_item.link2 = df['link2']         
         project_item.link3 = df['link3']         
         project_item.link4 = df['link4']         
-        project_item.link5 = df['link5']     
+        project_item.link5 = df['link5']   
+        project_item.image_title = df['image_title']  
         project_item.image1 = df['image1']    
         project_item.image2 = df['image2']    
-        project_item.image3 = df['image3']
-        project_item.image1 = f"<img loading='lazy' decoding='async' src='{{ url_for('static', filename='img/projects/{df['image1']}.jpg') }}' class=' w-100 card-img-top img-fluid' alt='' width='1200' height='800'>"
-         
+        project_item.image3 = df['image3']        
+ 
     db.session.commit()
 
 if __name__ == '__main__':
