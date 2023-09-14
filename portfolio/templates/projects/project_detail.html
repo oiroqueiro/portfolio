@@ -18,7 +18,7 @@
                 <div class="mb-4">
                     <h1 class="h2 fw-light mb-3">{{ project.title }}</h1>
                     <div class="d-flex">
-                    <span>{{ project.date }}</span>
+                    <span>{{ get_date_name(lang,project.date)|capitalize }}</span>
                     <span class="px-3">|</span>
                     <!--
                     <span>3 minutes read</span>
@@ -29,7 +29,7 @@
                         <li class="text-capitalize ms-4">{{ keyw_title }} :
 
                             {% set keyw_list = project.keywords.split(',') %}
-                            <span class="px-1">|</span>  
+                             
                             {% for keyw in keyw_list %}                    
                                 <a class="text-uppercase" href="{{ url_for('projects', _external=True, lang=lang, keyw=keyw, proj_date=project.date, proj_n=project_project_n) }}">{{ keyw }}</a>
                                 <span class="px-1">|</span> 

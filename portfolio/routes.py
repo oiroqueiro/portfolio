@@ -6,6 +6,9 @@ from flask_login import current_user, login_user, logout_user
 from portfolio.forms import LoginForm
 from portfolio.models import Languages, Content, Users, Projects
 import readtime
+from datetime import datetime
+from babel.dates import format_date, format_datetime, format_time
+from babel.dates import get_month_names
 
 portfolio.app_context().push()
 
@@ -110,6 +113,21 @@ def replace_image_tags(text, img_n, image):
     modified_text = text.replace(f"<img>{img_n}</img>", replacement_html)
     return modified_text
 
+def get_date_name(language, date):
+    """"Function to get the name of the month in the selected language
+    
+    Keyword arguments:
+    language -- iso code
+    date 
+    Return: the date
+    """
+
+    day = datetime.strptime(str(date), '%Y-%m-%d').day 
+    month_number = datetime.strptime(str(date), '%Y-%m-%d').month
+    year = datetime.strptime(str(date), '%Y-%m-%d').year
+
+    return f"{get_month_names(locale=language)[month_number]} {day}, {year}"
+
 # Views
 
 # index
@@ -130,7 +148,7 @@ def index(lang=None, proj_date=None, proj_n=1, title_slug=None):
 
     hello = str(Content.get_value('index', lang, 'hello')['value'] or '')
     name = str(Content.get_value('index', lang, 'name')['value'] or '')
-    subtitle = str(Content.get_value('index', lang, 'subtitle')['value'] or '')
+    subtitle = str(Content.get_value('index', lang, 'subtitle')['value'] or '')    
 
     return render_template('index.html', lang=lang, hello=hello, name=name,
                            subtitle=subtitle, get_touch=get_touch)
@@ -186,7 +204,7 @@ def about(lang=None, proj_date=None, proj_n=1, title_slug=None):
 @portfolio.route('/projects/<keyw>/', methods=['GET', 'POST'])
 @portfolio.route('/<lang>/projects/', methods=['GET', 'POST'])
 @portfolio.route('/<lang>/projects/<keyw>/', methods=['GET', 'POST'])
-def projects(lang=None, proj_date=None, proj_n=1, title_slug=None, keyw=None):
+def projects(lang=None, proj_date=None, proj_n=None, title_slug=None, keyw=None):
     if lang is None:
         lang = 'en'  # Set a default language if lang is not provided
 
@@ -234,7 +252,8 @@ def projects(lang=None, proj_date=None, proj_n=1, title_slug=None, keyw=None):
                            more=more, previous=previous, next=next,
                            all_keywords=all_keywords,
                            keywords_freq=keywords_freq, keyw_title=keyw_title,
-                           keyw=keyw, proj_n=proj_n, proj_date=proj_date)
+                           keyw=keyw, proj_n=proj_n, proj_date=proj_date,
+                           get_date_name=get_date_name)
 
 
 @portfolio.route('/project/<proj_date>/<proj_n>/<title_slug>/')
@@ -275,7 +294,7 @@ def project(lang=None, proj_date=None, proj_n=1, title_slug=None):
                            proj_date=proj_date, proj_n=proj_n,
                            title_slug=title_slug, project=project,
                            keyw_title=keyw_title, time_reading=time_reading,
-                           text=modified_text)
+                           text=modified_text,get_date_name=get_date_name)
 
 
 # contact
