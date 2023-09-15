@@ -236,8 +236,8 @@
     <div class="container h-100">
       <div class="row h-100">
         <div class="col-12 h-100">
-          <form action="/iwriter-hugo/search" class="h-100 position-relative">
-            <input class="search-box bg-transparent" id="search-query" name="s" type="search"  placeholder="Type & Hit Enter...">
+          <form action="{{ url_for('search', _external=True, lang=lang, proj_date=proj_date) }}" class="h-100 position-relative">
+            <input class="search-box bg-transparent" id="search-query" name="q" type="search"  placeholder="Type & Hit Enter...">
             <button class="searchClose search-close bg-white" type="button">
               <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>

@@ -30,3 +30,8 @@ class Config(object):
     # Projects per page
 
     PROJECTS_PAGE = int(os.environ.get('PROJECTS_PAGE')) or 2
+
+    # Elasticsearch
+
+    ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL') or None
+    ELASTICSEARCH_FINGERPR = os.environ.get('ELASTICSEARCH_FINGERPR') or None

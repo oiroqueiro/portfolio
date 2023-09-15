@@ -6,6 +6,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
 from flaskext.markdown import Markdown
+from elasticsearch import Elasticsearch
 
 portfolio = Flask(__name__)
 portfolio.config.from_object(Config)
@@ -23,5 +24,12 @@ login = LoginManager(portfolio)
 
 # Markdown for the detail of the project
 Markdown(portfolio)
+
+# Elasticsearch
+
+portfolio.elasticsearch = Elasticsearch(portfolio.config['ELASTICSEARCH_URL'],
+        ssl_assert_fingerprint=portfolio.config['ELASTICSEARCH_FINGERPR']) \
+        if (portfolio.config['ELASTICSEARCH_URL'] and 
+            portfolio.config['ELASTICSEARCH_FINGERPR']) else None
 
 from portfolio import routes, models

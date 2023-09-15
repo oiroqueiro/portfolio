@@ -3,7 +3,71 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from collections import Counter
 from slugify import slugify
+from portfolio.search import add_to_index, remove_from_index, query_index
+from sqlalchemy import text
 
+# Searching class
+
+class SearchableMixin(object):
+    @classmethod
+    def search(cls, expression, page, per_page):
+        ids, total = query_index(cls.__tablename__, expression, page, per_page)
+        if total == 0:
+            return cls.query.filter_by(id=0), 0
+        
+        when = []
+        for i in range(len(ids)):
+            when.append((ids[i], i))
+
+        #case_args = [
+        #    text(f"WHEN {cond} THEN {value}") for cond, value in when
+        #]
+
+        #return cls.query.filter(cls.id.in_(ids)).order_by(
+        #    db.case(when, value=cls.id)), total
+        #return cls.query.filter(cls.id.in_(ids)).order_by(*case_args), total
+    
+        objects = cls.query.filter(cls.id.in_(ids)).all()
+
+        sorted_objects = sorted(
+            objects,
+            key=lambda obj: next((value for cond, value in when if cond == obj.id), float('inf'))            
+        )
+
+        return sorted_objects, len(sorted_objects)
+
+    @classmethod
+    def before_commit(cls, session):
+        session._changes = {
+            'add': list(session.new),
+            'update': list(session.dirty),
+            'delete': list(session.deleted)
+        }
+
+    @classmethod
+    def after_commit(cls, session):
+        for obj in session._changes['add']:
+            if isinstance(obj, SearchableMixin):
+                add_to_index([obj].__tablename__, obj)
+        for obj in session._changes['update']:
+            if isinstance(obj, SearchableMixin):
+                add_to_index([obj].__tablename__, obj)
+        for obj in session._changes['delete']:
+            if isinstance(obj, SearchableMixin):
+                remove_from_index([obj].__tablename__, obj)
+        session._changes = None
+
+    @classmethod
+    def reindex(cls):
+        for obj in cls.query:
+            add_to_index(cls.__tablename__, obj)            
+
+# Event listeners
+
+db.event.listen(db.session, 'before_commit', SearchableMixin.before_commit)
+db.event.listen(db.session, 'after_commit', SearchableMixin.after_commit)
+
+# Users
 
 class Users(UserMixin, db.Model):
     _tablename__ = 'users'
@@ -36,6 +100,7 @@ class Users(UserMixin, db.Model):
             'email': self.email
         }
 
+# Languages
 
 class Languages(db.Model):
     __tablename__ = 'languages'
@@ -56,9 +121,11 @@ class Languages(db.Model):
     def getid(lang):
         return Languages.query.filter(Languages.language == lang).first().id
 
+# Content of the Portfolio
 
-class Content(db.Model):
+class Content(SearchableMixin, db.Model):
     __tablename__ = 'portfolio_content'
+    __searchable__ = ['value']
 
     id = db.Column(db.Integer, primary_key=True)
     template = db.Column(db.String(20), index=True)
@@ -68,7 +135,8 @@ class Content(db.Model):
     value = db.Column(db.String(250))
 
     def __repr__(self):
-        return '<Content {} {} {} {}>'.format(self.template, self.variable, self.languageid, self.value)
+        return '<Content {} {} {} {}>'.format(self.template, self.variable, 
+                                              self.languageid, self.value)
 
     def get_value(tem, lang, var) -> dict:
         if lang is None:
@@ -76,16 +144,20 @@ class Content(db.Model):
 
         langid = Languages.query.filter(Languages.language == lang).first().id
 
-        cont = Content.query.filter(Content.template == str(tem or ''), Content.languageid == langid,
+        cont = Content.query.filter(Content.template == str(tem or ''), 
+                                    Content.languageid == langid,
                                     Content.variable == var).first()
         if cont:
             d = dict()
             d['value'] = cont.value
         return d
 
+# Projects
 
-class Projects(db.Model):
+class Projects(SearchableMixin, db.Model):
     __tablename__ = 'portfolio_projects'
+    __searchable__ = ['date','title','title_slug','resume','exposition',
+                      'action','resolution','keywords']
 
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date)
@@ -112,16 +184,19 @@ class Projects(db.Model):
     image3 = db.Column(db.String())
 
     def __repr__(self):
-        return '<Project {} {} {} {}>'.format(self.date, self.languageid, self.title, self.resume)
+        return '<Project {} {} {} {}>'.format(self.date, self.languageid, 
+                                              self.title, self.resume)
 
     def get_by_id(proj_id):
         return Projects.query.filter(Projects.id == proj_id).first()
 
     def get_by_slug(lang_id, slug):
-        return Projects.query.filter(Projects.languageid == lang_id, Projects.title_slug == slug).first()
+        return Projects.query.filter(Projects.languageid == lang_id, 
+                                     Projects.title_slug == slug).first()
 
     def get_by_projn(lang_id, proj_n):
-        return Projects.query.filter(Projects.languageid == lang_id, Projects.project_n == proj_n).first()
+        return Projects.query.filter(Projects.languageid == lang_id, 
+                                     Projects.project_n == proj_n).first()
 
     def get_all():
         return Projects.query.all()
@@ -132,12 +207,14 @@ class Projects(db.Model):
 
         Keyword arguments:
 
-        Return: one tuple with the distinct keywords and one dictionary with the frequencies
+        Return: one tuple with the distinct keywords and one dictionary 
+        with the frequencies
         """
 
         all_keyw = [tp.strip() for tuples in Projects.query
                     .filter(Projects.languageid == langid)
-                    .with_entities(Projects.keywords).all() for tp in tuples[0].split(',')]
+                    .with_entities(Projects.keywords).all() \
+                    for tp in tuples[0].split(',')]
 
         keyws = sorted(tuple(set(all_keyw)))
 
@@ -158,6 +235,7 @@ class Projects(db.Model):
 
         return title_slug
 
+#Login users
 
 @login.user_loader
 def load_user(id):

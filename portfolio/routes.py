@@ -122,9 +122,10 @@ def get_date_name(language, date):
     Return: the date
     """
 
-    day = datetime.strptime(str(date), '%Y-%m-%d').day 
-    month_number = datetime.strptime(str(date), '%Y-%m-%d').month
-    year = datetime.strptime(str(date), '%Y-%m-%d').year
+    date_ojb = datetime.strptime(str(date), '%Y-%m-%d')
+    day = date_ojb.day 
+    month_number = date_ojb.month
+    year = date_ojb.year
 
     return f"{get_month_names(locale=language)[month_number]} {day}, {year}"
 
@@ -341,6 +342,75 @@ def contact(lang=None, proj_date=None, proj_n=1, title_slug=None):
                            subtitle=subtitle, first_name=first_name,
                            last_name=last_name, email=email, message=message,
                            submit=submit)
+
+# search
+
+@portfolio.route('/search/')
+@portfolio.route('/<lang>/search/')
+def search(lang=None, proj_date=None, proj_n=1, title_slug=None, keyw=None):
+    if lang is None:
+        lang = 'en'  # Set a default language if lang is not provided
+
+    set_lang(lang)
+    set_proj(proj_n)
+    set_date(proj_date)
+    set_slug(title_slug)
+
+    query = request.args.get('q')
+    
+    if not query:
+        return redirect(request.referrer)
+    
+    # Since I will search in the Content and the relevant content would be
+    # the section About, I will show only 1 element just in case there were
+    # any match.
+
+    content, content_total = Content.search(query, 1, 1)
+
+    # Projects
+        
+    langid = Languages.getid(lang)
+
+    all_keywords, keywords_freq = Projects.get_all_keyws_and_freq(langid)
+
+    keyw_title = str(Content.get_value('', lang, 'keyw_title')['value'] or '')
+    more = str(Content.get_value('', lang, 'more')['value'] or '')
+    previous = str(Content.get_value('', lang, 'previous')['value'] or '')
+    next = str(Content.get_value('', lang, 'next')['value'] or '')
+
+    page = request.args.get('page', 1, type=int)
+
+    projects, proj_total = Projects.search(query, 
+                                        page, 
+                                        portfolio.config['PROJECTS_PAGE'])
+    projs = projects
+    print(f"*** {projects}")
+    projs = (
+        projs
+        .paginate(page=page, per_page=portfolio.config['PROJECTS_PAGE'],
+                  error_out=False)
+    )
+
+    next_url = url_for('projects', lang=lang, keyw=keyw, proj_n=proj_n,\
+                        proj_date=proj_date, page=projs.next_num) \
+        if projs.has_next else None
+
+    prev_url = url_for('projects', lang=lang, proj_n=proj_n,\
+                        proj_date=proj_date, page=projs.prev_num) \
+        if projs.has_prev else None
+
+    return render_template('projects/index.html', lang=lang, projs=projs.items,
+                           page=page, next_url=next_url, prev_url=prev_url,
+                           more=more, previous=previous, next=next,
+                           all_keywords=all_keywords,
+                           keywords_freq=keywords_freq, keyw_title=keyw_title,
+                           keyw=keyw, proj_n=proj_n, proj_date=proj_date,
+                           get_date_name=get_date_name, 
+                           content_total=content_total)
+
+        
+
+
 
 # login
 
