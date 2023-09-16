@@ -17,6 +17,7 @@ def remove_from_index(index, model):
 def query_index(index, query, page, per_page):
     if not portfolio.elasticsearch:
         return
+    
     search = portfolio.elasticsearch.search(
         index=index,
         query={

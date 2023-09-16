@@ -58,12 +58,15 @@ def insert_data(df):
 
     content_item =  content_exists(df['template'],lang_id,df['variable'])
    
-    if not content_item:        
+    if not content_item:                    
         content_item = Content(template=df['template'],languageid=lang_id,
                                variable=df['variable'],value=df['value'])
         db.session.add(content_item)       
     else:
-        content_item.value = df['value']         
+        
+        if content_item.value != df['value']:            
+            content_item.value = df['value']         
+        
     db.session.commit()
 
     
@@ -131,7 +134,8 @@ if __name__ == '__main__':
     
     # Insert/update the content of the portfolio
 
-    content_df = load_data('content')     
+    content_df = load_data('content')  
+    content_df.replace(np.nan, '', inplace=True)   
     content_df.apply(insert_data,axis=1)
 
     # Insert/update the projects of the portfolio

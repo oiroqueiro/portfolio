@@ -46,7 +46,7 @@ def inject_data():
     lang = request.lang
     proj_n = request.proj_n
     proj_date = request.proj_date
-    title_slug = request.title_slug
+    title_slug = request.title_slug    
 
     languages = list([str(l) for l in Languages.get_all()])
 
@@ -68,6 +68,7 @@ def inject_data():
         menu_manage_logout = Content.get_value(
             '', lang, 'menu_manage_logout')['value']
         foot = Content.get_value('', lang, 'foot')['value']
+        search_hint = Content.get_value('', lang, 'search')['value']
     except KeyError:
         abort(404)
 
@@ -79,7 +80,8 @@ def inject_data():
                 menu_manage_projects=menu_manage_projects,
                 menu_manage_contact=menu_manage_contact,
                 menu_manage_logout=menu_manage_logout, foot=foot,
-                proj_n=proj_n, proj_date=proj_date, title_slug=title_slug)
+                proj_n=proj_n, proj_date=proj_date, title_slug=title_slug,
+                search_hint=search_hint)
 
 # Functions
 
@@ -129,6 +131,10 @@ def get_date_name(language, date):
 
     return f"{get_month_names(locale=language)[month_number]} {day}, {year}"
 
+def get_lang_name_proj(proj_id):
+    langid = Projects.query.filter_by(id = proj_id).first().languageid
+    return Languages.query.filter_by(id = langid).first().language
+
 # Views
 
 # index
@@ -143,7 +149,7 @@ def index(lang=None, proj_date=None, proj_n=1, title_slug=None):
     set_lang(lang)
     set_proj(proj_n)
     set_date(proj_date)
-    set_slug(title_slug)
+    set_slug(title_slug)    
 
     get_touch = Content.get_value('', lang, 'get_touch')['value']
 
@@ -205,7 +211,8 @@ def about(lang=None, proj_date=None, proj_n=1, title_slug=None):
 @portfolio.route('/projects/<keyw>/', methods=['GET', 'POST'])
 @portfolio.route('/<lang>/projects/', methods=['GET', 'POST'])
 @portfolio.route('/<lang>/projects/<keyw>/', methods=['GET', 'POST'])
-def projects(lang=None, proj_date=None, proj_n=None, title_slug=None, keyw=None):
+def projects(lang=None, proj_date=None, proj_n=None, title_slug=None, 
+             keyw=None):
     if lang is None:
         lang = 'en'  # Set a default language if lang is not provided
 
@@ -288,8 +295,7 @@ def project(lang=None, proj_date=None, proj_n=1, title_slug=None):
     modified_text = replace_image_tags(modified_text, 'image2', 
                                        project.image2)
     modified_text = replace_image_tags(modified_text, 'image3', 
-                                       project.image3)
-    print(f"***{modified_text}")
+                                       project.image3)    
 
     return render_template('projects/project_detail.html', lang=lang,
                            proj_date=proj_date, proj_n=proj_n,
@@ -347,7 +353,7 @@ def contact(lang=None, proj_date=None, proj_n=1, title_slug=None):
 
 @portfolio.route('/search/')
 @portfolio.route('/<lang>/search/')
-def search(lang=None, proj_date=None, proj_n=1, title_slug=None, keyw=None):
+def search(lang=None, proj_date=None, proj_n=1, title_slug=None):
     if lang is None:
         lang = 'en'  # Set a default language if lang is not provided
 
@@ -365,52 +371,38 @@ def search(lang=None, proj_date=None, proj_n=1, title_slug=None, keyw=None):
     # the section About, I will show only 1 element just in case there were
     # any match.
 
-    content, content_total = Content.search(query, 1, 1)
+    #content, content_total = Content.search(query, 1, 1)
 
-    # Projects
-        
-    langid = Languages.getid(lang)
+    # Projects            
 
-    all_keywords, keywords_freq = Projects.get_all_keyws_and_freq(langid)
-
-    keyw_title = str(Content.get_value('', lang, 'keyw_title')['value'] or '')
     more = str(Content.get_value('', lang, 'more')['value'] or '')
     previous = str(Content.get_value('', lang, 'previous')['value'] or '')
     next = str(Content.get_value('', lang, 'next')['value'] or '')
 
-    page = request.args.get('page', 1, type=int)
+    page = request.args.get('page', 1, type=int)    
 
-    projects, proj_total = Projects.search(query, 
+    print(f"*** page: {page}")
+
+    projs, proj_total = Projects.search(query, 
                                         page, 
                                         portfolio.config['PROJECTS_PAGE'])
-    projs = projects
-    print(f"*** {projects}")
-    projs = (
-        projs
-        .paginate(page=page, per_page=portfolio.config['PROJECTS_PAGE'],
-                  error_out=False)
-    )
+    
+    print(f"*** page: {page} total: {proj_total}")
 
-    next_url = url_for('projects', lang=lang, keyw=keyw, proj_n=proj_n,\
-                        proj_date=proj_date, page=projs.next_num) \
-        if projs.has_next else None
+    next_url = url_for('search', q=query, page=page + 1) \
+        if proj_total > page * portfolio.config['PROJECTS_PAGE'] else None
 
-    prev_url = url_for('projects', lang=lang, proj_n=proj_n,\
-                        proj_date=proj_date, page=projs.prev_num) \
-        if projs.has_prev else None
+    prev_url = url_for('search', q=query, page=(page - 1)) \
+        if page > 1 else None
 
-    return render_template('projects/index.html', lang=lang, projs=projs.items,
+    return render_template('search/index.html', lang=lang, projs=projs,
                            page=page, next_url=next_url, prev_url=prev_url,
-                           more=more, previous=previous, next=next,
-                           all_keywords=all_keywords,
-                           keywords_freq=keywords_freq, keyw_title=keyw_title,
+                           more=more, previous=previous, next=next,                           
                            keyw=keyw, proj_n=proj_n, proj_date=proj_date,
-                           get_date_name=get_date_name, 
-                           content_total=content_total)
+                           get_date_name=get_date_name,
+                           get_lang_name_proj=get_lang_name_proj)
 
         
-
-
 
 # login
 
@@ -465,7 +457,7 @@ def login(lang=None, proj_date=None, proj_n=1, title_slug=None):
 def logout(lang=None, proj_date=None, proj_n=1, title_slug=None):
     if lang is None:
         lang = 'en'  # Set a default language if lang is not provided
-
+    
     set_lang(lang)
     set_proj(proj_n)
     set_date(proj_date)

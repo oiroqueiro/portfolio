@@ -4,7 +4,7 @@ from flask_login import UserMixin
 from collections import Counter
 from slugify import slugify
 from portfolio.search import add_to_index, remove_from_index, query_index
-from sqlalchemy import text
+from sqlalchemy import case
 
 # Searching class
 
@@ -15,46 +15,33 @@ class SearchableMixin(object):
         if total == 0:
             return cls.query.filter_by(id=0), 0
         
-        when = []
+        when = {}
         for i in range(len(ids)):
-            when.append((ids[i], i))
+            when[ids[i]] = i            
 
-        #case_args = [
-        #    text(f"WHEN {cond} THEN {value}") for cond, value in when
-        #]
-
-        #return cls.query.filter(cls.id.in_(ids)).order_by(
-        #    db.case(when, value=cls.id)), total
-        #return cls.query.filter(cls.id.in_(ids)).order_by(*case_args), total
-    
-        objects = cls.query.filter(cls.id.in_(ids)).all()
-
-        sorted_objects = sorted(
-            objects,
-            key=lambda obj: next((value for cond, value in when if cond == obj.id), float('inf'))            
-        )
-
-        return sorted_objects, len(sorted_objects)
-
+        return cls.query.filter(cls.id.in_(ids)).order_by(
+            db.case(when, value=cls.id)), total
+        
+        
     @classmethod
     def before_commit(cls, session):
-        session._changes = {
+        session._changes = {        
             'add': list(session.new),
             'update': list(session.dirty),
             'delete': list(session.deleted)
         }
 
     @classmethod
-    def after_commit(cls, session):
+    def after_commit(cls, session):        
         for obj in session._changes['add']:
             if isinstance(obj, SearchableMixin):
-                add_to_index([obj].__tablename__, obj)
-        for obj in session._changes['update']:
+                add_to_index(obj.__class__.__tablename__, obj)
+        for obj in session._changes['update']:            
             if isinstance(obj, SearchableMixin):
-                add_to_index([obj].__tablename__, obj)
+                add_to_index(obj.__class__.__tablename__, obj)
         for obj in session._changes['delete']:
             if isinstance(obj, SearchableMixin):
-                remove_from_index([obj].__tablename__, obj)
+                remove_from_index(obj.__class__.__tablename__, obj)
         session._changes = None
 
     @classmethod
@@ -123,9 +110,8 @@ class Languages(db.Model):
 
 # Content of the Portfolio
 
-class Content(SearchableMixin, db.Model):
+class Content(db.Model):
     __tablename__ = 'portfolio_content'
-    __searchable__ = ['value']
 
     id = db.Column(db.Integer, primary_key=True)
     template = db.Column(db.String(20), index=True)
