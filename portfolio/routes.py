@@ -220,12 +220,17 @@ def projects(lang=None, proj_date=None, proj_n=None, title_slug=None,
     set_proj(proj_n)
     set_date(proj_date)
     set_slug(title_slug)
-
+    
     langid = Languages.getid(lang)
 
-    all_keywords, keywords_freq = Projects.get_all_keyws_and_freq(langid)
+    # Keywords
+    query_keyw = request.args.get('q')    
+    all_keywords, keywords_freq = Projects.get_all_keyws_and_freq(langid, 
+                                                                  query_keyw)
+    # Projects. Main template
 
     keyw_title = str(Content.get_value('', lang, 'keyw_title')['value'] or '')
+    key_search = str(Content.get_value('', lang, 'search_keyw')['value'] or '')
     more = str(Content.get_value('', lang, 'more')['value'] or '')
     previous = str(Content.get_value('', lang, 'previous')['value'] or '')
     next = str(Content.get_value('', lang, 'next')['value'] or '')
@@ -261,7 +266,7 @@ def projects(lang=None, proj_date=None, proj_n=None, title_slug=None,
                            all_keywords=all_keywords,
                            keywords_freq=keywords_freq, keyw_title=keyw_title,
                            keyw=keyw, proj_n=proj_n, proj_date=proj_date,
-                           get_date_name=get_date_name)
+                           get_date_name=get_date_name, key_search=key_search)
 
 
 @portfolio.route('/project/<proj_date>/<proj_n>/<title_slug>/')
@@ -367,12 +372,6 @@ def search(lang=None, proj_date=None, proj_n=1, title_slug=None):
     if not query:
         return redirect(request.referrer)
     
-    # Since I will search in the Content and the relevant content would be
-    # the section About, I will show only 1 element just in case there were
-    # any match.
-
-    #content, content_total = Content.search(query, 1, 1)
-
     # Projects            
 
     more = str(Content.get_value('', lang, 'more')['value'] or '')
@@ -381,14 +380,10 @@ def search(lang=None, proj_date=None, proj_n=1, title_slug=None):
 
     page = request.args.get('page', 1, type=int)    
 
-    print(f"*** page: {page}")
-
     projs, proj_total = Projects.search(query, 
                                         page, 
                                         portfolio.config['PROJECTS_PAGE'])
     
-    print(f"*** page: {page} total: {proj_total}")
-
     next_url = url_for('search', q=query, page=page + 1) \
         if proj_total > page * portfolio.config['PROJECTS_PAGE'] else None
 
@@ -398,7 +393,7 @@ def search(lang=None, proj_date=None, proj_n=1, title_slug=None):
     return render_template('search/index.html', lang=lang, projs=projs,
                            page=page, next_url=next_url, prev_url=prev_url,
                            more=more, previous=previous, next=next,                           
-                           keyw=keyw, proj_n=proj_n, proj_date=proj_date,
+                           proj_n=proj_n, proj_date=proj_date,
                            get_date_name=get_date_name,
                            get_lang_name_proj=get_lang_name_proj)
 

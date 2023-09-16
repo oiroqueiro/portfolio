@@ -4,7 +4,7 @@ from flask_login import UserMixin
 from collections import Counter
 from slugify import slugify
 from portfolio.search import add_to_index, remove_from_index, query_index
-from sqlalchemy import case
+from sqlalchemy import case, or_
 
 # Searching class
 
@@ -187,7 +187,7 @@ class Projects(SearchableMixin, db.Model):
     def get_all():
         return Projects.query.all()
 
-    def get_all_keyws_and_freq(langid):
+    def get_all_keyws_and_freq(langid, q_keyw=None):
         """This function will get all the keywords of the projects
         and will calculate their frequencies
 
@@ -197,11 +197,17 @@ class Projects(SearchableMixin, db.Model):
         with the frequencies
         """
 
-        all_keyw = [tp.strip() for tuples in Projects.query
-                    .filter(Projects.languageid == langid)
+        base_query = Projects.query.filter(Projects.languageid == langid)
+
+        if q_keyw is not None:
+            base_query = base_query.filter(Projects.keywords
+                                           .ilike(f"%{q_keyw}%"))                         
+
+        all_keyw = [tp.strip() for tuples in base_query
                     .with_entities(Projects.keywords).all() \
                     for tp in tuples[0].split(',')]
 
+                        
         keyws = sorted(tuple(set(all_keyw)))
 
         keyws_freq = dict(Counter(all_keyw))
