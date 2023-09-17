@@ -4,14 +4,20 @@ from flask_login import UserMixin
 from collections import Counter
 from slugify import slugify
 from portfolio.search import add_to_index, remove_from_index, query_index
-from sqlalchemy import case, or_
+#from sqlalchemy import case
+from flask import abort
 
 # Searching class
 
 class SearchableMixin(object):
     @classmethod
-    def search(cls, expression, page, per_page):
-        ids, total = query_index(cls.__tablename__, expression, page, per_page)
+    def search(cls, expression, page, per_page):   
+        try:     
+            ids, total = query_index(cls.__tablename__, expression, page, 
+                                     per_page)
+        except Exception as e:
+            abort(500, e)
+
         if total == 0:
             return cls.query.filter_by(id=0), 0
         
@@ -35,19 +41,31 @@ class SearchableMixin(object):
     def after_commit(cls, session):        
         for obj in session._changes['add']:
             if isinstance(obj, SearchableMixin):
-                add_to_index(obj.__class__.__tablename__, obj)
+                try:
+                    add_to_index(obj.__class__.__tablename__, obj)
+                except Exception as e:
+                    abort(500, e)
         for obj in session._changes['update']:            
             if isinstance(obj, SearchableMixin):
-                add_to_index(obj.__class__.__tablename__, obj)
+                try:
+                    add_to_index(obj.__class__.__tablename__, obj)
+                except Exception as e:
+                    abort(500, e)
         for obj in session._changes['delete']:
             if isinstance(obj, SearchableMixin):
-                remove_from_index(obj.__class__.__tablename__, obj)
+                try:
+                    remove_from_index(obj.__class__.__tablename__, obj)
+                except Exception as e:
+                    abort(500, e)
         session._changes = None
 
     @classmethod
     def reindex(cls):
         for obj in cls.query:
-            add_to_index(cls.__tablename__, obj)            
+            try:
+                add_to_index(cls.__tablename__, obj)            
+            except Exception as e:
+                abort(500, e)
 
 # Event listeners
 

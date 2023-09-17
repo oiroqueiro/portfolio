@@ -1,5 +1,5 @@
 from flask import render_template, send_from_directory, request, redirect, \
-    url_for, flash, abort
+    url_for, flash, abort, jsonify
 from portfolio import portfolio, db
 from portfolio.emails import send_email
 from flask_login import current_user, login_user, logout_user
@@ -9,8 +9,44 @@ import readtime
 from datetime import datetime
 from babel.dates import format_date, format_datetime, format_time
 from babel.dates import get_month_names
+import traceback
 
 portfolio.app_context().push()
+
+@portfolio.errorhandler(404)
+def page_not_found(e):
+    lang = request.lang
+    proj_n = request.proj_n
+
+    content = Content.get_value('', lang, '404_error')
+    error400 = content.get('value','')
+    content = Content.get_value('', lang, 'back_home')
+    back_home = content.get('value','')
+
+    return render_template('404.html', error400=error400, back_home=back_home, 
+                           lang=lang, proj_n=proj_n), 404
+
+@portfolio.errorhandler(Exception)
+def handle_all_errors(e):
+    traceback.print_exc()
+    response = {
+        "error": str(e),
+        "message": "An unexpected error occurred."
+    }
+ 
+    lang = request.lang
+    proj_n = request.proj_n
+
+    content = Content.get_value('', lang, 'error')
+    error_text = content.get('value','')
+    content = Content.get_value('', lang, 'error_subtitle')
+    error_subtitle = content.get('value','')
+    content = Content.get_value('', lang, 'back_home')
+    back_home = content.get('value','')
+
+    return render_template('error.html', error_text=error_text, 
+                           error_subtitle=error_subtitle, back_home=back_home, 
+                           lang=lang, proj_n=proj_n), 500
 
 # Managing the context processor with multilanguage and title slugs for projects
 
@@ -18,6 +54,7 @@ portfolio.app_context().push()
 def set_lang(lang=None):
     request.lang = request.args.get('lang', lang)
 
+@portfolio.before_request
 def set_proj(proj_n=1):
     """Since when the user can change the language, the webpage should to be the
     same, I need to save a reference to the exact line for the language that
@@ -34,10 +71,11 @@ def set_proj(proj_n=1):
 
     request.proj_n = request.args.get('proj_n', proj_n)
 
-
+@portfolio.before_request
 def set_date(proj_date=None):
     request.proj_date = request.args.get('proj_date', proj_date)
 
+@portfolio.before_request
 def set_slug(slug=None):
     request.title_slug = request.args.get('title_slug', slug)
 
@@ -50,7 +88,11 @@ def inject_data():
 
     languages = list([str(l) for l in Languages.get_all()])
 
+    menu_home = menu_about = menu_contact = menu_projects = menu_manage = \
+        menu_manage_home = menu_manage_about = menu_manage_projects = \
+            menu_manage_contact = menu_manage_logout = foot = search_hint = ''
     try:
+        """
         menu_home = str(Content.get_value(
             '', lang, 'menu_home')['value'] or '')
         menu_about = Content.get_value('', lang, 'menu_about')['value']
@@ -69,8 +111,31 @@ def inject_data():
             '', lang, 'menu_manage_logout')['value']
         foot = Content.get_value('', lang, 'foot')['value']
         search_hint = Content.get_value('', lang, 'search')['value']
-    except KeyError:
-        abort(404)
+        """
+        menu_home = getattr(Content.get_value('', lang, 'menu_home'),'value','')
+        menu_about = getattr(Content.get_value('', lang, 'menu_about'),
+                             'value','')
+        menu_contact = getattr(Content.get_value('', lang, 'menu_contact'),
+                               'value','')
+        menu_projects = getattr(Content.get_value('', lang, 'menu_projects'),
+                                'value','')
+        menu_manage = getattr(Content.get_value('', lang, 'menu_manage'),
+                              'value','')
+        menu_manage_home = getattr(Content.get_value(
+            '', lang, 'menu_manage_home'),'value','')
+        menu_manage_about = getattr(Content.get_value(
+            '', lang, 'menu_manage_about'),'value','')
+        menu_manage_projects = getattr(Content.get_value(
+            '', lang, 'menu_manage_projects'),'value','')
+        menu_manage_contact = getattr(Content.get_value(
+            '', lang, 'menu_manage_contact'),'value','')
+        menu_manage_logout = getattr(Content.get_value(
+            '', lang, 'menu_manage_logout'),'value','')
+        foot = getattr(Content.get_value('', lang, 'foot'),'value','')
+        search_hint = getattr(Content.get_value('', lang, 'search'),'value','')
+    except KeyError as k:
+        #abort(500, k)
+        pass
 
     return dict(languages=languages,
                 menu_home=menu_home, menu_about=menu_about,
@@ -136,6 +201,11 @@ def get_lang_name_proj(proj_id):
     return Languages.query.filter_by(id = langid).first().language
 
 # Views
+
+@portfolio.route('/<path:path>')
+def catch_all(path):
+    print(f"***Non-existent route requested: {path}")
+    abort(404)
 
 # index
 
@@ -371,7 +441,17 @@ def search(lang=None, proj_date=None, proj_n=1, title_slug=None):
     
     if not query:
         return redirect(request.referrer)
-    
+
+    print("*** HERE")
+
+    print(f"*** {portfolio.config['ELASTICSEARCH_URL']}")
+    if portfolio.config['ELASTICSEARCH_URL'] is None:
+        print("*** IN")
+        flash('Elasticsearch is not configured.')
+        return redirect(request.referrer)
+
+    print("*** HERE2")
+
     # Projects            
 
     more = str(Content.get_value('', lang, 'more')['value'] or '')

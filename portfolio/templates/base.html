@@ -203,7 +203,11 @@
           <select class="m-2 me-0 border-0 bg-transparent select-language d-none d-lg-inline-block" id="select-language" onchange="location = this.value;">
             {% for language in languages %}
               
-              <option id="{{ language }}" value="{{ url_for(request.endpoint, _external=True, lang=language, proj_date=proj_date, proj_n=proj_n, title_slug=title_slug) }}" {% if lang == language %}selected{% endif %}>{{ language.upper() }}</option>                
+              {% if request.endpoint == 'catch_all' %}
+                  <option id="{{ language }}" value="{{ url_for(request.endpoint, _external=True, lang=language, proj_date=proj_date, proj_n=proj_n, title_slug=title_slug, path=request.path) }}" {% if lang == language %}selected{% endif %}>{{ language.upper() }}</option>
+              {% else %}
+                  <option id="{{ language }}" value="{{ url_for(request.endpoint, _external=True, lang=language, proj_date=proj_date, proj_n=proj_n, title_slug=title_slug) }}" {% if lang == language %}selected{% endif %}>{{ language.upper() }}</option>
+              {% endif %}
               
             {% endfor %}
           </select>
