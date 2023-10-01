@@ -18,10 +18,13 @@ def page_not_found(e):
     lang = request.lang
     proj_n = request.proj_n
 
+    print(f"***{lang}")
+          
     content = Content.get_value('', lang, '404_error')
     error400 = content.get('value','')
     content = Content.get_value('', lang, 'back_home')
-    back_home = content.get('value','')
+    back_home = content.get('value','')    
+
 
     return render_template('404.html', error400=error400, back_home=back_home, 
                            lang=lang, proj_n=proj_n), 404
@@ -88,54 +91,39 @@ def inject_data():
 
     languages = list([str(l) for l in Languages.get_all()])
 
+    
     menu_home = menu_about = menu_contact = menu_projects = menu_manage = \
         menu_manage_home = menu_manage_about = menu_manage_projects = \
             menu_manage_contact = menu_manage_logout = foot = search_hint = ''
+
     try:
-        """
         menu_home = str(Content.get_value(
-            '', lang, 'menu_home')['value'] or '')
-        menu_about = Content.get_value('', lang, 'menu_about')['value']
-        menu_contact = Content.get_value('', lang, 'menu_contact')['value']
-        menu_projects = Content.get_value('', lang, 'menu_projects')['value']
-        menu_manage = Content.get_value('', lang, 'menu_manage')['value']
-        menu_manage_home = Content.get_value(
-            '', lang, 'menu_manage_home')['value']
-        menu_manage_about = Content.get_value(
-            '', lang, 'menu_manage_about')['value']
-        menu_manage_projects = Content.get_value(
-            '', lang, 'menu_manage_projects')['value']
-        menu_manage_contact = Content.get_value(
-            '', lang, 'menu_manage_contact')['value']
-        menu_manage_logout = Content.get_value(
-            '', lang, 'menu_manage_logout')['value']
-        foot = Content.get_value('', lang, 'foot')['value']
-        search_hint = Content.get_value('', lang, 'search')['value']
-        """
-        menu_home = getattr(Content.get_value('', lang, 'menu_home'),'value','')
-        menu_about = getattr(Content.get_value('', lang, 'menu_about'),
-                             'value','')
-        menu_contact = getattr(Content.get_value('', lang, 'menu_contact'),
-                               'value','')
-        menu_projects = getattr(Content.get_value('', lang, 'menu_projects'),
-                                'value','')
-        menu_manage = getattr(Content.get_value('', lang, 'menu_manage'),
-                              'value','')
-        menu_manage_home = getattr(Content.get_value(
-            '', lang, 'menu_manage_home'),'value','')
-        menu_manage_about = getattr(Content.get_value(
-            '', lang, 'menu_manage_about'),'value','')
-        menu_manage_projects = getattr(Content.get_value(
-            '', lang, 'menu_manage_projects'),'value','')
-        menu_manage_contact = getattr(Content.get_value(
-            '', lang, 'menu_manage_contact'),'value','')
-        menu_manage_logout = getattr(Content.get_value(
-            '', lang, 'menu_manage_logout'),'value','')
-        foot = getattr(Content.get_value('', lang, 'foot'),'value','')
-        search_hint = getattr(Content.get_value('', lang, 'search'),'value','')
+            '', lang, 'menu_home')['value'] or '')      
+        menu_about = str(Content.get_value(
+            '', lang, 'menu_about')['value'] or '')
+        menu_contact = str(Content.get_value(
+            '', lang, 'menu_contact')['value'] or '')
+        menu_projects = str(Content.get_value(
+            '', lang, 'menu_projects')['value'] or '')
+        menu_manage = str(Content.get_value(
+            '', lang, 'menu_manage')['value'] or '')
+        menu_manage_home = str(Content.get_value(
+            '', lang, 'menu_manage_home')['value'] or '')
+        menu_manage_about = str(Content.get_value(
+            '', lang, 'menu_manage_about')['value'] or '')
+        menu_manage_projects = str(Content.get_value(
+            '', lang, 'menu_manage_projects')['value'] or '')
+        menu_manage_contact = str(Content.get_value(
+            '', lang, 'menu_manage_contact')['value'] or '')
+        menu_manage_logout = str(Content.get_value(
+            '', lang, 'menu_manage_logout')['value'] or '')
+        foot = str(Content.get_value(
+            '', lang, 'foot')['value'] or '')
+        search_hint = str(Content.get_value(
+            '', lang, 'search')['value'] or '')
     except KeyError as k:
-        #abort(500, k)
-        pass
+        abort(500, k)
+        
 
     return dict(languages=languages,
                 menu_home=menu_home, menu_about=menu_about,
@@ -180,6 +168,15 @@ def replace_image_tags(text, img_n, image):
     modified_text = text.replace(f"<img>{img_n}</img>", replacement_html)
     return modified_text
 
+def replace_link_tag(text, proj_link):
+    links = [proj_link.link1, proj_link.link2, proj_link.link3, 
+             proj_link.link4, proj_link.link5]
+    
+    for i in range(5):        
+        text = text.replace(f"<lnk>link{i+1}</lnk>", links[i])
+
+    return text
+
 def get_date_name(language, date):
     """"Function to get the name of the month in the selected language
     
@@ -203,7 +200,10 @@ def get_lang_name_proj(proj_id):
 # Views
 
 @portfolio.route('/<path:path>')
-def catch_all(path):
+def catch_all(path, lang):
+    if lang is None:
+        lang = 'en'
+        
     print(f"***Non-existent route requested: {path}")
     abort(404)
 
@@ -371,6 +371,8 @@ def project(lang=None, proj_date=None, proj_n=1, title_slug=None):
                                        project.image2)
     modified_text = replace_image_tags(modified_text, 'image3', 
                                        project.image3)    
+        
+    modified_text = replace_link_tag(modified_text, project)
 
     return render_template('projects/project_detail.html', lang=lang,
                            proj_date=proj_date, proj_n=proj_n,

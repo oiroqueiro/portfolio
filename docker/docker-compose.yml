@@ -1,0 +1,53 @@
+services:
+  app:
+    container_name: portfolio
+    build:
+      context: /home/roque/03. Projects/portfolio
+      dockerfile: ./docker/dockerfile
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env   
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB} 
+    depends_on:
+      - postgres  
+    networks:
+      - mynet    
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    #hostname: localhost
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      #- ./init.sh:/docker-entrypoint-initdb.d/init.sh
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - pg_data:/var/lib/postgres/data
+    networks:
+      - mynet      
+  
+  elasticsearch:
+    image: elasticsearch:8.10.2
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+    networks:
+      - mynet
+
+networks:
+  mynet:
+    driver: bridge
+
+volumes:
+  pg_data:
+
+
+
+

@@ -136,7 +136,7 @@ class Content(db.Model):
     variable = db.Column(db.String(20), index=True)
     languageid = db.Column(db.Integer, db.ForeignKey(
         'languages.id', name='fk_languageid'))
-    value = db.Column(db.String(250))
+    value = db.Column(db.String())
 
     def __repr__(self):
         return '<Content {} {} {} {}>'.format(self.template, self.variable, 
@@ -172,11 +172,11 @@ class Projects(SearchableMixin, db.Model):
     title = db.Column(db.String(50), index=True)
     title_slug = db.Column(db.String(60), unique=False,
                            nullable=False, index=True)
-    resume = db.Column(db.String(250), index=True)
+    resume = db.Column(db.Text, index=True)
     exposition = db.Column(db.String())
     action = db.Column(db.String())
     resolution = db.Column(db.String())
-    keywords = db.Column(db.String(250), index=True)
+    keywords = db.Column(db.String(), index=True)
     link1 = db.Column(db.String(250))
     link2 = db.Column(db.String(250))
     link3 = db.Column(db.String(250))

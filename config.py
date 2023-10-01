@@ -9,7 +9,7 @@ class Config(object):
 
     # Emailing
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
-    MAIL_PORT = int(os.environ.get('MAIL_PORT'))
+    MAIL_PORT = int(os.environ.get('MAIL_PORT') or 0)
     MAIL_USE_SSL = int(os.environ.get('MAIL_USE_SSL') == 'True')
     MAIL_USE_TLS = int(os.environ.get('MAIL_USE_TLS') == 'True')
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
@@ -29,7 +29,7 @@ class Config(object):
 
     # Projects per page
 
-    PROJECTS_PAGE = int(os.environ.get('PROJECTS_PAGE')) or 2
+    PROJECTS_PAGE = int(os.environ.get('PROJECTS_PAGE') or 2)
 
     # Elasticsearch
 

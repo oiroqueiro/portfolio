@@ -30,7 +30,7 @@ def project_exists(p_date, p_langid, p_projn):
     else:
         return False
 def load_data(sheet):
-    return pd.read_excel(Path('secrets/content.xlsx'), sheet_name=sheet)
+    return pd.read_excel(Path('content.xlsx'), sheet_name=sheet)
 
 def insert_language(df):
     """This function is used to insert the languages of the portfolio
@@ -38,9 +38,9 @@ def insert_language(df):
     Keyword arguments:
     df -- dataframe
     Return: None    
-    """
-
+    """   
     lang_exists = Languages.query.filter(Languages.language == df['language']).first()
+
     if not lang_exists:
         lang_item = Languages(language=df['language'])
         db.session.add(lang_item)
@@ -53,11 +53,11 @@ def insert_data(df):
     when I have time to improve the project, I will give the option of 
     doing it using the own website   
     """
-    
+
     lang_id = Languages.query.filter(Languages.language == df['language'].lower()).first().id
 
     content_item =  content_exists(df['template'],lang_id,df['variable'])
-   
+  
     if not content_item:                    
         content_item = Content(template=df['template'],languageid=lang_id,
                                variable=df['variable'],value=df['value'])
@@ -77,14 +77,28 @@ def insert_projects(df):
     when I have time to improve the project, I will give the option of 
     doing it using the own website   
     """
+
+    print(f"*** IN keywords: {df['keywords']}")
     
     df['keywords'] = df['keywords'].lower()
 
+    print(f"*** lang: {df['language']}")
+
     lang_id = Languages.query.filter(Languages.language == df['language'].lower()).first().id
+
+    print(f"*** lang_id: {lang_id}")
+
     title_slug = Projects.set_title_slug(lang_id,df['title'])
+
+    print(f"*** title_slug: {title_slug}")
+
     project_item = project_exists(df['date'],lang_id,df['project_n'])
+
+    print(f"*** project_item: {project_item}")
         
-    if not project_item:               
+    if not project_item:       
+        print(f"***NEW: {project_item}")     
+
         project_item = Projects(date=df['date'],languageid=lang_id,project_n=df['project_n'],
                                title=df['title'],title_slug=title_slug,
                                resume=df['resume'],exposition=df['exposition'],
@@ -94,8 +108,16 @@ def insert_projects(df):
                                image_title = df['image_title'],
                                image1=df['image1'],image2=df['image2'],image3=df['image3'])
 
+        print(f"*** project_item: {project_item}") 
+
         db.session.add(project_item)   
+
+        print("*** After ADD")
+
     else:
+
+        print("*** Else")
+
         project_item.date = df['date']         
         project_item.project_n = df['project_n']         
         project_item.languageid = lang_id
@@ -116,14 +138,20 @@ def insert_projects(df):
         project_item.image2 = df['image2']    
         project_item.image3 = df['image3']        
  
+        print(f"*** project_item: {project_item}")
+
     db.session.commit()
 
+    print("*** After commit")
+
 if __name__ == '__main__':
+
     portfolio.app_context().push()  
 
     # Insert/update the languages of the portfolio
 
     content_df = load_data('languages')     
+
     content_df.apply(insert_language,axis=1)
 
     # Insert/update the texts of the website
@@ -144,5 +172,5 @@ if __name__ == '__main__':
     content_df.replace(np.nan, '', inplace=True)
     content_df.apply(insert_projects,axis=1)
 
-    
+    print("*** FINISHED ")
 

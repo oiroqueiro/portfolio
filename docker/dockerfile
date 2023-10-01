@@ -1,0 +1,30 @@
+FROM python:alpine
+
+RUN adduser -D portfolio
+
+WORKDIR /portfolio/
+
+COPY ../requirements.txt requirements.txt
+
+RUN apk add --no-cache gcc python3-dev libc-dev linux-headers
+
+RUN pip install --upgrade pip setuptools
+RUN pip install psutil
+
+RUN pip install -r requirements.txt
+RUN pip install gunicorn
+
+COPY ../portfolio portfolio
+COPY ../migrations migrations
+COPY ../portfolio.py ../config.py ../create_user.py ../insert_data.py ../reindex_db.py ../content.xlsx ./
+COPY ../docker/boot.sh ./
+
+RUN chmod +x ./boot.sh
+
+ENV FLASK_APP portfolio.py
+
+RUN chown -R portfolio:portfolio ./
+USER portfolio
+
+EXPOSE 5000
+CMD [ "/portfolio/boot.sh" ]
