@@ -27,9 +27,13 @@ Markdown(portfolio)
 
 # Elasticsearch
 
-portfolio.elasticsearch = Elasticsearch(portfolio.config['ELASTICSEARCH_URL'],
-        ssl_assert_fingerprint=portfolio.config['ELASTICSEARCH_FINGERPR']) \
-        if (portfolio.config['ELASTICSEARCH_URL'] and 
-            portfolio.config['ELASTICSEARCH_FINGERPR']) else None
+# portfolio.elasticsearch = Elasticsearch(portfolio.config['ELASTICSEARCH_URL'],
+#        ssl_assert_fingerprint=portfolio.config['ELASTICSEARCH_FINGERPR']) \
+#        if (portfolio.config['ELASTICSEARCH_URL'] and
+#            portfolio.config['ELASTICSEARCH_FINGERPR']) else None
+
+portfolio.elasticsearch = Elasticsearch([str(portfolio.config['ELASTICSEARCH_URL'])],
+                        basic_auth=('elastic', str(portfolio.config['ELASTIC_PASSWORD']))) \
+    if (portfolio.config['ELASTICSEARCH_URL']) else None
 
 from portfolio import routes, models

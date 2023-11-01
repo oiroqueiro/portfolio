@@ -38,6 +38,7 @@ services:
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     networks:
       - mynet
 

@@ -30,8 +30,7 @@
             <li>{{ skill2 }}</li>
             <li>{{ skill3 }}</li>
             </ul>
-          <a href="{{ url_for('index', _external=True, lang=lang) }}" class="btn btn-primary text-white">{{ more }}</a>
-
+          
           <h3 id="youtube">Youtube</h3>
 
           <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
@@ -40,6 +39,8 @@
 
           <p>{{ parragraph5|markdown }}</p>
           <p>{{ parragraph6|markdown }}</p>
+
+          <a href="{{ url_for('projects', _external=True, lang=lang) }}" class="btn btn-primary text-white">{{ more }}</a>
 
         </div>
 

@@ -13,21 +13,20 @@ import traceback
 
 portfolio.app_context().push()
 
+
 @portfolio.errorhandler(404)
 def page_not_found(e):
     lang = request.lang
     proj_n = request.proj_n
 
-    print(f"***{lang}")
-          
-    content = Content.get_value('', lang, '404_error')
-    error400 = content.get('value','')
-    content = Content.get_value('', lang, 'back_home')
-    back_home = content.get('value','')    
+    value = Content.get_value('', lang, '404_error')
+    error400 = '' if not value else str(value['value'])
+    value = Content.get_value('', lang, 'back_home')
+    back_home = '' if not value else str(value['value'])
 
-
-    return render_template('404.html', error400=error400, back_home=back_home, 
+    return render_template('404.html', error400=error400, back_home=back_home,
                            lang=lang, proj_n=proj_n), 404
+
 
 @portfolio.errorhandler(Exception)
 def handle_all_errors(e):
@@ -36,26 +35,28 @@ def handle_all_errors(e):
         "error": str(e),
         "message": "An unexpected error occurred."
     }
- 
+
     lang = request.lang
     proj_n = request.proj_n
 
-    content = Content.get_value('', lang, 'error')
-    error_text = content.get('value','')
-    content = Content.get_value('', lang, 'error_subtitle')
-    error_subtitle = content.get('value','')
-    content = Content.get_value('', lang, 'back_home')
-    back_home = content.get('value','')
+    value = Content.get_value('', lang, 'error')
+    error_text = '' if not value else str(value['value'])
+    value = Content.get_value('', lang, 'error_subtitle')
+    error_subtitle = '' if not value else str(value['value'])
+    value = Content.get_value('', lang, 'back_home')
+    back_home = '' if not value else str(value['value'])
 
-    return render_template('error.html', error_text=error_text, 
-                           error_subtitle=error_subtitle, back_home=back_home, 
+    return render_template('error.html', error_text=error_text,
+                           error_subtitle=error_subtitle, back_home=back_home,
                            lang=lang, proj_n=proj_n), 500
 
 # Managing the context processor with multilanguage and title slugs for projects
 
+
 @portfolio.before_request
 def set_lang(lang=None):
     request.lang = request.args.get('lang', lang)
+
 
 @portfolio.before_request
 def set_proj(proj_n=1):
@@ -74,56 +75,69 @@ def set_proj(proj_n=1):
 
     request.proj_n = request.args.get('proj_n', proj_n)
 
+
 @portfolio.before_request
 def set_date(proj_date=None):
     request.proj_date = request.args.get('proj_date', proj_date)
 
+
 @portfolio.before_request
 def set_slug(slug=None):
     request.title_slug = request.args.get('title_slug', slug)
+
 
 @portfolio.context_processor
 def inject_data():
     lang = request.lang
     proj_n = request.proj_n
     proj_date = request.proj_date
-    title_slug = request.title_slug    
+    title_slug = request.title_slug
 
     languages = list([str(l) for l in Languages.get_all()])
 
-    
     menu_home = menu_about = menu_contact = menu_projects = menu_manage = \
         menu_manage_home = menu_manage_about = menu_manage_projects = \
-            menu_manage_contact = menu_manage_logout = foot = search_hint = ''
+        menu_manage_contact = menu_manage_logout = foot = search_hint = ''
 
     try:
-        menu_home = str(Content.get_value(
-            '', lang, 'menu_home')['value'] or '')      
-        menu_about = str(Content.get_value(
-            '', lang, 'menu_about')['value'] or '')
-        menu_contact = str(Content.get_value(
-            '', lang, 'menu_contact')['value'] or '')
-        menu_projects = str(Content.get_value(
-            '', lang, 'menu_projects')['value'] or '')
-        menu_manage = str(Content.get_value(
-            '', lang, 'menu_manage')['value'] or '')
-        menu_manage_home = str(Content.get_value(
-            '', lang, 'menu_manage_home')['value'] or '')
-        menu_manage_about = str(Content.get_value(
-            '', lang, 'menu_manage_about')['value'] or '')
-        menu_manage_projects = str(Content.get_value(
-            '', lang, 'menu_manage_projects')['value'] or '')
-        menu_manage_contact = str(Content.get_value(
-            '', lang, 'menu_manage_contact')['value'] or '')
-        menu_manage_logout = str(Content.get_value(
-            '', lang, 'menu_manage_logout')['value'] or '')
-        foot = str(Content.get_value(
-            '', lang, 'foot')['value'] or '')
-        search_hint = str(Content.get_value(
-            '', lang, 'search')['value'] or '')
+        value = Content.get_value('', lang, 'menu_home')
+        menu_home = '' if not value else str(value['value'])
+
+        value = Content.get_value('', lang, 'menu_about')
+        menu_about = '' if not value else str(value['value'])
+
+        value = Content.get_value('', lang, 'menu_contact')
+        menu_contact = '' if not value else str(value['value'])
+
+        value = Content.get_value('', lang, 'menu_projects')
+        menu_projects = '' if not value else str(value['value'])
+
+        value = Content.get_value('', lang, 'menu_manage')
+        menu_manage = '' if not value else str(value['value'])
+
+        value = Content.get_value('', lang, 'menu_manage_home')
+        menu_manage_home = '' if not value else str(value['value'])
+
+        value = Content.get_value('', lang, 'menu_manage_about')
+        menu_manage_about = '' if not value else str(value['value'])
+
+        value = Content.get_value('', lang, 'menu_manage_projects')
+        menu_manage_projects = '' if not value else str(value['value'])
+
+        value = Content.get_value('', lang, 'menu_manage_contact')
+        menu_manage_contact = '' if not value else str(value['value'])
+
+        value = Content.get_value('', lang, 'menu_manage_logout')
+        menu_manage_logout = '' if not value else str(value['value'])
+
+        value = Content.get_value('', lang, 'foot')
+        foot = '' if not value else str(value['value'])
+
+        value = Content.get_value('', lang, 'search')
+        search_hint = '' if not value else str(value['value'])
+
     except KeyError as k:
         abort(500, k)
-        
 
     return dict(languages=languages,
                 menu_home=menu_home, menu_about=menu_about,
@@ -138,6 +152,7 @@ def inject_data():
 
 # Functions
 
+
 def replace_image_tags(text, img_n, image):
     '''
     Function to replace the string <img>image(n)</img> with the html needed
@@ -149,7 +164,7 @@ def replace_image_tags(text, img_n, image):
 
     return modified_text: the text ready to render
     '''
-    
+
     replacement_html = f'''<img loading="lazy" decoding="async" 
                         src="{ url_for('static', filename='img/projects/') }{ image }_1110.jpg" 
                         srcset="{ url_for('static', filename='img/projects/') }{ image }_545x.webp 545w,
@@ -168,18 +183,20 @@ def replace_image_tags(text, img_n, image):
     modified_text = text.replace(f"<img>{img_n}</img>", replacement_html)
     return modified_text
 
+
 def replace_link_tag(text, proj_link):
-    links = [proj_link.link1, proj_link.link2, proj_link.link3, 
+    links = [proj_link.link1, proj_link.link2, proj_link.link3,
              proj_link.link4, proj_link.link5]
-    
-    for i in range(5):        
+
+    for i in range(5):
         text = text.replace(f"<lnk>link{i+1}</lnk>", links[i])
 
     return text
 
+
 def get_date_name(language, date):
     """"Function to get the name of the month in the selected language
-    
+
     Keyword arguments:
     language -- iso code
     date 
@@ -187,27 +204,30 @@ def get_date_name(language, date):
     """
 
     date_ojb = datetime.strptime(str(date), '%Y-%m-%d')
-    day = date_ojb.day 
+    day = date_ojb.day
     month_number = date_ojb.month
     year = date_ojb.year
 
     return f"{get_month_names(locale=language)[month_number]} {day}, {year}"
 
+
 def get_lang_name_proj(proj_id):
-    langid = Projects.query.filter_by(id = proj_id).first().languageid
-    return Languages.query.filter_by(id = langid).first().language
+    langid = Projects.query.filter_by(id=proj_id).first().languageid
+    return Languages.query.filter_by(id=langid).first().language
 
 # Views
+
 
 @portfolio.route('/<path:path>')
 def catch_all(path, lang):
     if lang is None:
         lang = 'en'
-        
+
     print(f"***Non-existent route requested: {path}")
     abort(404)
 
 # index
+
 
 @portfolio.route('/')
 @portfolio.route('/index/')
@@ -219,13 +239,22 @@ def index(lang=None, proj_date=None, proj_n=1, title_slug=None):
     set_lang(lang)
     set_proj(proj_n)
     set_date(proj_date)
-    set_slug(title_slug)    
+    set_slug(title_slug)
 
-    get_touch = Content.get_value('', lang, 'get_touch')['value']
+    # value = Content.get_value('', lang, 'menu_home')
+    #    menu_home = '' if not value else str(value['value'])
 
-    hello = str(Content.get_value('index', lang, 'hello')['value'] or '')
-    name = str(Content.get_value('index', lang, 'name')['value'] or '')
-    subtitle = str(Content.get_value('index', lang, 'subtitle')['value'] or '')    
+    value = Content.get_value('', lang, 'get_touch')
+    get_touch = '' if not value else str(value['value'])
+
+    value = Content.get_value('index', lang, 'hello')
+    hello = '' if not value else str(value['value'])
+
+    value = Content.get_value('index', lang, 'name')
+    name = '' if not value else str(value['value'])
+
+    value = Content.get_value('index', lang, 'subtitle')
+    subtitle = '' if not value else str(value['value'])
 
     return render_template('index.html', lang=lang, hello=hello, name=name,
                            subtitle=subtitle, get_touch=get_touch)
@@ -244,27 +273,44 @@ def about(lang=None, proj_date=None, proj_n=1, title_slug=None):
     set_date(proj_date)
     set_slug(title_slug)
 
-    hello = str(Content.get_value('about', lang, 'hello')['value'] or '')
-    parragraph1 = str(Content.get_value('about', lang, 'parragraph1')['value']
-                      or '')
-    parragraph2 = str(Content.get_value('about', lang, 'parragraph2')['value']
-                      or '')
-    parragraph3 = str(Content.get_value('about', lang, 'parragraph3')['value']
-                      or '')
-    parragraph4 = str(Content.get_value('about', lang, 'parragraph4')['value']
-                      or '')
-    parragraph5 = str(Content.get_value('about', lang, 'parragraph5')['value']
-                      or '')
-    parragraph6 = str(Content.get_value('about', lang, 'parragraph6')['value']
-                      or '')
-    skills_title = str(Content.get_value('about', lang, 'skills_title')['value']
-                       or '')
-    skill1 = str(Content.get_value('about', lang, 'skill1')['value'] or '')
-    skill2 = str(Content.get_value('about', lang, 'skill2')['value'] or '')
-    skill3 = str(Content.get_value('about', lang, 'skill3')['value'] or '')
-    youtube = str(Content.get_value('about', lang, 'youtube')['value'] or '')
+    value = Content.get_value('about', lang, 'hello')
+    hello = '' if not value else str(value['value'])
 
-    more = str(Content.get_value('', lang, 'more')['value'] or '')
+    value = Content.get_value('about', lang, 'parragraph1')
+    parragraph1 = '' if not value else str(value['value'])
+
+    value = Content.get_value('about', lang, 'parragraph2')
+    parragraph2 = '' if not value else str(value['value'])
+
+    value = Content.get_value('about', lang, 'parragraph3')
+    parragraph3 = '' if not value else str(value['value'])
+
+    value = Content.get_value('about', lang, 'parragraph4')
+    parragraph4 = '' if not value else str(value['value'])
+
+    value = Content.get_value('about', lang, 'parragraph5')
+    parragraph5 = '' if not value else str(value['value'])
+
+    value = Content.get_value('about', lang, 'parragraph6')
+    parragraph6 = '' if not value else str(value['value'])
+
+    value = Content.get_value('about', lang, 'skills_title')
+    skills_title = '' if not value else str(value['value'])
+
+    value = Content.get_value('about', lang, 'skill1')
+    skill1 = '' if not value else str(value['value'])
+
+    value = Content.get_value('about', lang, 'skill2')
+    skill2 = '' if not value else str(value['value'])
+
+    value = Content.get_value('about', lang, 'skill3')
+    skill3 = '' if not value else str(value['value'])
+
+    value = Content.get_value('about', lang, 'youtube')
+    youtube = '' if not value else str(value['value'])
+
+    value = Content.get_value('', lang, 'more')
+    more = '' if not value else str(value['value'])
 
     return render_template('about/index.html', lang=lang, hello=hello,
                            parragraph1=parragraph1, parragraph2=parragraph2,
@@ -281,7 +327,7 @@ def about(lang=None, proj_date=None, proj_n=1, title_slug=None):
 @portfolio.route('/projects/<keyw>/', methods=['GET', 'POST'])
 @portfolio.route('/<lang>/projects/', methods=['GET', 'POST'])
 @portfolio.route('/<lang>/projects/<keyw>/', methods=['GET', 'POST'])
-def projects(lang=None, proj_date=None, proj_n=None, title_slug=None, 
+def projects(lang=None, proj_date=None, proj_n=None, title_slug=None,
              keyw=None):
     if lang is None:
         lang = 'en'  # Set a default language if lang is not provided
@@ -290,20 +336,31 @@ def projects(lang=None, proj_date=None, proj_n=None, title_slug=None,
     set_proj(proj_n)
     set_date(proj_date)
     set_slug(title_slug)
-    
+
     langid = Languages.getid(lang)
 
     # Keywords
-    query_keyw = request.args.get('q')    
-    all_keywords, keywords_freq = Projects.get_all_keyws_and_freq(langid, 
+    query_keyw = request.args.get('q')
+    all_keywords, keywords_freq = Projects.get_all_keyws_and_freq(langid,
                                                                   query_keyw)
     # Projects. Main template
 
-    keyw_title = str(Content.get_value('', lang, 'keyw_title')['value'] or '')
-    key_search = str(Content.get_value('', lang, 'search_keyw')['value'] or '')
-    more = str(Content.get_value('', lang, 'more')['value'] or '')
-    previous = str(Content.get_value('', lang, 'previous')['value'] or '')
-    next = str(Content.get_value('', lang, 'next')['value'] or '')
+    value = Content.get_value('', lang, 'keyw_title')
+    keyw_title = '' if not value else str(value['value'])
+
+    value = Content.get_value('', lang, 'search_keyw')
+    key_search = '' if not value else str(value['value'])
+
+    print(f"*** {key_search=}")
+
+    value = Content.get_value('', lang, 'more')
+    more = '' if not value else str(value['value'])
+
+    value = Content.get_value('', lang, 'previous')
+    previous = '' if not value else str(value['value'])
+
+    value = Content.get_value('', lang, 'next')
+    next = '' if not value else str(value['value'])
 
     page = request.args.get('page', 1, type=int)
 
@@ -322,12 +379,12 @@ def projects(lang=None, proj_date=None, proj_n=None, title_slug=None,
                   error_out=False)
     )
 
-    next_url = url_for('projects', lang=lang, keyw=keyw, proj_n=proj_n,\
-                        proj_date=proj_date, page=projs.next_num) \
+    next_url = url_for('projects', lang=lang, keyw=keyw, proj_n=proj_n,
+                       proj_date=proj_date, page=projs.next_num) \
         if projs.has_next else None
 
-    prev_url = url_for('projects', lang=lang, proj_n=proj_n,\
-                        proj_date=proj_date, page=projs.prev_num) \
+    prev_url = url_for('projects', lang=lang, proj_n=proj_n,
+                       proj_date=proj_date, page=projs.prev_num) \
         if projs.has_prev else None
 
     return render_template('projects/index.html', lang=lang, projs=projs.items,
@@ -352,8 +409,11 @@ def project(lang=None, proj_date=None, proj_n=1, title_slug=None):
     set_date(proj_date)
     set_slug(title_slug)
 
-    keyw_title = str(Content.get_value('', lang, 'keyw_title')['value'] or '')
-    read = str(Content.get_value('', lang, 'read')['value'] or '')
+    value = Content.get_value('', lang, 'keyw_title')
+    keyw_title = '' if not value else str(value['value'])
+
+    value = Content.get_value('', lang, 'read')
+    read = '' if not value else str(value['value'])
 
     time_reading = str(readtime.
                        of_markdown(" ".join(
@@ -365,20 +425,20 @@ def project(lang=None, proj_date=None, proj_n=1, title_slug=None):
 
     # Create the replacements for the images
 
-    modified_text = replace_image_tags(project.resolution, 'image1', 
+    modified_text = replace_image_tags(project.resolution, 'image1',
                                        project.image1)
-    modified_text = replace_image_tags(modified_text, 'image2', 
+    modified_text = replace_image_tags(modified_text, 'image2',
                                        project.image2)
-    modified_text = replace_image_tags(modified_text, 'image3', 
-                                       project.image3)    
-        
+    modified_text = replace_image_tags(modified_text, 'image3',
+                                       project.image3)
+
     modified_text = replace_link_tag(modified_text, project)
 
     return render_template('projects/project_detail.html', lang=lang,
                            proj_date=proj_date, proj_n=proj_n,
                            title_slug=title_slug, project=project,
                            keyw_title=keyw_title, time_reading=time_reading,
-                           text=modified_text,get_date_name=get_date_name)
+                           text=modified_text, get_date_name=get_date_name)
 
 
 # contact
@@ -394,18 +454,29 @@ def contact(lang=None, proj_date=None, proj_n=1, title_slug=None):
     set_date(proj_date)
     set_slug(title_slug)
 
-    title = str(Content.get_value('contact', lang, 'title')['value'] or '')
-    subtitle = str(Content.get_value('contact', lang, 'subtitle')['value']
-                   or '')
-    first_name = str(Content.get_value('contact', lang, 'first_name')['value']
-                     or '')
-    last_name = str(Content.get_value('contact', lang, 'last_name')['value']
-                    or '')
-    email = str(Content.get_value('contact', lang, 'email')['value'] or '')
-    message = str(Content.get_value('contact', lang, 'message')['value'] or '')
-    submit = str(Content.get_value('contact', lang, 'submit')['value'] or '')
-    email_subject = str(Content.get_value('contact', lang, 'email_subject'
-                                          )['value'] or '')
+    value = Content.get_value('contact', lang, 'title')
+    title = '' if not value else str(value['value'])
+
+    value = Content.get_value('contact', lang, 'subtitle')
+    subtitle = '' if not value else str(value['value'])
+
+    value = Content.get_value('contact', lang, 'first_name')
+    first_name = '' if not value else str(value['value'])
+
+    value = Content.get_value('contact', lang, 'last_name')
+    last_name = '' if not value else str(value['value'])
+
+    value = Content.get_value('contact', lang, 'email')
+    email = '' if not value else str(value['value'])
+
+    value = Content.get_value('contact', lang, 'message')
+    message = '' if not value else str(value['value'])
+
+    value = Content.get_value('contact', lang, 'submit')
+    submit = '' if not value else str(value['value'])
+
+    value = Content.get_value('contact', lang, 'email_subject')
+    email_subject = '' if not value else str(value['value'])
 
     if request.method == 'POST':
         first_name_post = request.form['First Name']
@@ -428,6 +499,7 @@ def contact(lang=None, proj_date=None, proj_n=1, title_slug=None):
 
 # search
 
+
 @portfolio.route('/search/')
 @portfolio.route('/<lang>/search/')
 def search(lang=None, proj_date=None, proj_n=1, title_slug=None):
@@ -440,32 +512,27 @@ def search(lang=None, proj_date=None, proj_n=1, title_slug=None):
     set_slug(title_slug)
 
     query = request.args.get('q')
-    
+
     if not query:
         return redirect(request.referrer)
 
-    print("*** HERE")
+    # Projects
 
-    print(f"*** {portfolio.config['ELASTICSEARCH_URL']}")
-    if portfolio.config['ELASTICSEARCH_URL'] is None:
-        print("*** IN")
-        flash('Elasticsearch is not configured.')
-        return redirect(request.referrer)
+    value = Content.get_value('', lang, 'more')
+    more = '' if not value else str(value['value'])
 
-    print("*** HERE2")
+    value = Content.get_value('', lang, 'previous')
+    previous = '' if not value else str(value['value'])
 
-    # Projects            
+    value = Content.get_value('', lang, 'next')
+    next = '' if not value else str(value['value'])
 
-    more = str(Content.get_value('', lang, 'more')['value'] or '')
-    previous = str(Content.get_value('', lang, 'previous')['value'] or '')
-    next = str(Content.get_value('', lang, 'next')['value'] or '')
+    page = request.args.get('page', 1, type=int)
 
-    page = request.args.get('page', 1, type=int)    
-
-    projs, proj_total = Projects.search(query, 
-                                        page, 
+    projs, proj_total = Projects.search(query,
+                                        page,
                                         portfolio.config['PROJECTS_PAGE'])
-    
+
     next_url = url_for('search', q=query, page=page + 1) \
         if proj_total > page * portfolio.config['PROJECTS_PAGE'] else None
 
@@ -474,12 +541,11 @@ def search(lang=None, proj_date=None, proj_n=1, title_slug=None):
 
     return render_template('search/index.html', lang=lang, projs=projs,
                            page=page, next_url=next_url, prev_url=prev_url,
-                           more=more, previous=previous, next=next,                           
+                           more=more, previous=previous, next=next,
                            proj_n=proj_n, proj_date=proj_date,
                            get_date_name=get_date_name,
                            get_lang_name_proj=get_lang_name_proj)
 
-        
 
 # login
 
@@ -502,19 +568,24 @@ def login(lang=None, proj_date=None, proj_n=1, title_slug=None):
 
     form = LoginForm()
 
-    form.username.label.text = str(Content.get_value('', lang, 'username'
-                                                     )['value'] or '')
-    form.password.label.text = str(Content.get_value('', lang, 'password'
-                                                     )['value'] or '')
-    form.remember_me.label.text = str(Content.get_value('', lang, 'rememberme'
-                                                        )['value'] or '')
-    form.submit.label.text = str(Content.get_value('', lang, 'signin')['value']
-                                 or '')
+    value = Content.get_value('', lang, 'username')
+    form.username.label.text = '' if not value else str(value['value'])
+
+    value = Content.get_value('', lang, 'password')
+    form.password.label.text = '' if not value else str(value['value'])
+
+    value = Content.get_value('', lang, 'rememberme')
+    form.remember_me.label.text = '' if not value else str(value['value'])
+
+    value = Content.get_value('', lang, 'signin')
+    form.submit.label.text = '' if not value else str(value['value'])
 
     if form.validate_on_submit():
         user = Users.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
-            flash(Content.get_value('', lang, 'errorlogin')['value'])
+            value = Content.get_value('', lang, 'errorlogin')
+            flash('' if not value else value['value'])
+
             return redirect(url_for('login', lang=lang))
 
         login_user(user, remember=form.remember_me.data)
@@ -534,7 +605,7 @@ def login(lang=None, proj_date=None, proj_n=1, title_slug=None):
 def logout(lang=None, proj_date=None, proj_n=1, title_slug=None):
     if lang is None:
         lang = 'en'  # Set a default language if lang is not provided
-    
+
     set_lang(lang)
     set_proj(proj_n)
     set_date(proj_date)
