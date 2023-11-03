@@ -5,7 +5,7 @@ from collections import Counter
 from slugify import slugify
 from portfolio.search import add_to_index, remove_from_index, query_index
 from flask import abort, current_app
-from sqlalchemy import cast, VARCHAR
+from sqlalchemy import cast, VARCHAR, or_
 
 
 # Searching class
@@ -15,24 +15,31 @@ class SearchableMixin(object):
     @classmethod
     def search(cls, expression, page, per_page):
         if current_app.config['ELASTICSEARCH_URL'] is None:
-
             # Alternate search if no elasticsearch configured
-            query_alt = cls.query
 
+            filters = []
+
+            query_alt = cls.query
             for column in cls.__searchable__:
-                query_alt = query_alt.filter(
-                    cast(getattr(cls, column), VARCHAR).ilike(f"%{expression}%"))
+                filters.append(cast(getattr(cls, column),
+                               VARCHAR).ilike(f"%{expression}%"))
+            query_alt = query_alt.filter(or_(*filters))
+
+            print(f"SQL Query: {str(query_alt)}")
 
             projs_alt = [project for project in query_alt]
+            print(f"*** {projs_alt=}")
 
             # total of number of results
             total = len(projs_alt)
+            print(f"*** {total=}")
 
             # Paginate the results
             query_alt = query_alt.limit(per_page).offset(page * per_page)
 
             return projs_alt, total
 
+        print(f"*** Elasticsearch")
         try:
             ids, total = query_index(cls.__tablename__, expression, page,
                                      per_page)

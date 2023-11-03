@@ -39,6 +39,8 @@ services:
     environment:
       - discovery.type=single-node
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+    depends_on:
+      - postgres
     networks:
       - mynet
 
