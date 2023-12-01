@@ -351,8 +351,6 @@ def projects(lang=None, proj_date=None, proj_n=None, title_slug=None,
     value = Content.get_value('', lang, 'search_keyw')
     key_search = '' if not value else str(value['value'])
 
-    print(f"*** {key_search=}")
-
     value = Content.get_value('', lang, 'more')
     more = '' if not value else str(value['value'])
 

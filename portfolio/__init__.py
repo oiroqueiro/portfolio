@@ -32,8 +32,7 @@ Markdown(portfolio)
 #        if (portfolio.config['ELASTICSEARCH_URL'] and
 #            portfolio.config['ELASTICSEARCH_FINGERPR']) else None
 
-portfolio.elasticsearch = Elasticsearch([str(portfolio.config['ELASTICSEARCH_URL'])],
-                                        basic_auth=('elastic', str(portfolio.config['ELASTIC_PASSWORD']))) \
+portfolio.elasticsearch = Elasticsearch(portfolio.config['ELASTICSEARCH_URL']) \
     if (portfolio.config['ELASTICSEARCH_URL']) else None
 
 from portfolio import routes, models

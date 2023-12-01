@@ -17,6 +17,8 @@ class SearchableMixin(object):
         if current_app.config['ELASTICSEARCH_URL'] is None:
             # Alternate search if no elasticsearch configured
 
+            print(f"***** NO Elasticsearch")
+
             filters = []
 
             query_alt = cls.query
@@ -25,22 +27,18 @@ class SearchableMixin(object):
                                VARCHAR).ilike(f"%{expression}%"))
             query_alt = query_alt.filter(or_(*filters))
 
-            print(f"SQL Query: {str(query_alt)}")
-
             projs_alt = [project for project in query_alt]
-            print(f"*** {projs_alt=}")
 
             # total of number of results
             total = len(projs_alt)
-            print(f"*** {total=}")
 
             # Paginate the results
             query_alt = query_alt.limit(per_page).offset(page * per_page)
 
             return projs_alt, total
 
-        print(f"*** Elasticsearch")
         try:
+            print(f"***** Elasticsearch")
             ids, total = query_index(cls.__tablename__, expression, page,
                                      per_page)
         except Exception as e:
@@ -73,7 +71,6 @@ class SearchableMixin(object):
             return
 
         for obj in session._changes['add']:
-            print(f"object: {obj}")
             if isinstance(obj, SearchableMixin):
                 try:
                     add_to_index(obj.__class__.__tablename__, obj)
