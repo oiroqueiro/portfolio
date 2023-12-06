@@ -35,8 +35,6 @@ class Config(object):
     # Elasticsearch
 
     ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL') or None
-
-    print(f"{ELASTICSEARCH_URL=}")
     # ELASTICSEARCH_FINGERPR = os.environ.get('ELASTICSEARCH_FINGERPR') or None
     # ELASTIC_AUTH = os.environ.get('ELASTIC_AUTH') or None
     ELASTIC_PASSWORD = os.environ.get('ELASTICSEARCH_PASSWORD') or None

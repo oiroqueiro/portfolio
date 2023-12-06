@@ -17,8 +17,6 @@ class SearchableMixin(object):
         if current_app.config['ELASTICSEARCH_URL'] is None:
             # Alternate search if no elasticsearch configured
 
-            print(f"***** NO Elasticsearch")
-
             filters = []
 
             query_alt = cls.query
@@ -38,7 +36,8 @@ class SearchableMixin(object):
             return projs_alt, total
 
         try:
-            print(f"***** Elasticsearch")
+            # Searching wit Elasticsearch
+
             ids, total = query_index(cls.__tablename__, expression, page,
                                      per_page)
         except Exception as e:
@@ -239,8 +238,9 @@ class Projects(SearchableMixin, db.Model):
         return Projects.query.filter(Projects.languageid == lang_id,
                                      Projects.title_slug == slug).first()
 
-    def get_by_projn(lang_id, proj_n):
+    def get_by_projn(lang_id, proj_date, proj_n):
         return Projects.query.filter(Projects.languageid == lang_id,
+                                     Projects.date == proj_date,
                                      Projects.project_n == proj_n).first()
 
     def get_all():

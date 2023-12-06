@@ -176,11 +176,12 @@ def replace_image_tags(text, img_n, image):
                                 (max-width: 991px) 700px,
                                 1110px"
                         class="w-100 card-img-top img-fluid" 
-                        alt="{ image }" 
+                         alt="{ image }"
                         width="1200" 
                         height="800">'''
 
     modified_text = text.replace(f"<img>{img_n}</img>", replacement_html)
+
     return modified_text
 
 
@@ -400,12 +401,12 @@ def project(lang=None, proj_date=None, proj_n=1, title_slug=None):
     if lang is None:
         lang = 'en'  # Set a default language if lang is not provided
 
-    project = Projects.get_by_slug(Languages.getid(lang), title_slug)
+    project = Projects.get_by_projn(Languages.getid(lang), proj_date, proj_n)
 
     set_lang(lang)
     set_proj(proj_n)
     set_date(proj_date)
-    set_slug(title_slug)
+    set_slug(project.title_slug)
 
     value = Content.get_value('', lang, 'keyw_title')
     keyw_title = '' if not value else str(value['value'])
@@ -423,20 +424,38 @@ def project(lang=None, proj_date=None, proj_n=1, title_slug=None):
 
     # Create the replacements for the images
 
-    modified_text = replace_image_tags(project.resolution, 'image1',
-                                       project.image1)
-    modified_text = replace_image_tags(modified_text, 'image2',
-                                       project.image2)
-    modified_text = replace_image_tags(modified_text, 'image3',
-                                       project.image3)
+    if project.exposition:
+        modified_text = replace_image_tags(project.exposition, 'image1',
+                                           project.image1)
+        modified_text = replace_image_tags(modified_text, 'image2',
+                                           project.image2)
+        modified_text = replace_image_tags(modified_text, 'image3',
+                                           project.image3)
+        project.exposition = replace_link_tag(modified_text, project)
 
-    modified_text = replace_link_tag(modified_text, project)
+    if project.action:
+        modified_text = replace_image_tags(project.action, 'image1',
+                                           project.image1)
+        modified_text = replace_image_tags(modified_text, 'image2',
+                                           project.image2)
+        modified_text = replace_image_tags(modified_text, 'image3',
+                                           project.image3)
+        project.action = replace_link_tag(modified_text, project)
+
+    if project.resolution:
+        modified_text = replace_image_tags(project.resolution, 'image1',
+                                           project.image1)
+        modified_text = replace_image_tags(modified_text, 'image2',
+                                           project.image2)
+        modified_text = replace_image_tags(modified_text, 'image3',
+                                           project.image3)
+        project.resolution = replace_link_tag(modified_text, project)
 
     return render_template('projects/project_detail.html', lang=lang,
                            proj_date=proj_date, proj_n=proj_n,
                            title_slug=title_slug, project=project,
                            keyw_title=keyw_title, time_reading=time_reading,
-                           text=modified_text, get_date_name=get_date_name)
+                           get_date_name=get_date_name)
 
 
 # contact
