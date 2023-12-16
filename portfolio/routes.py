@@ -431,7 +431,8 @@ def project(lang=None, proj_date=None, proj_n=1, title_slug=None):
                                            project.image2)
         modified_text = replace_image_tags(modified_text, 'image3',
                                            project.image3)
-        project.exposition = replace_link_tag(modified_text, project)
+        # project.exposition = replace_link_tag(modified_text, project)
+        project.exposition = modified_text
 
     if project.action:
         modified_text = replace_image_tags(project.action, 'image1',
@@ -440,7 +441,8 @@ def project(lang=None, proj_date=None, proj_n=1, title_slug=None):
                                            project.image2)
         modified_text = replace_image_tags(modified_text, 'image3',
                                            project.image3)
-        project.action = replace_link_tag(modified_text, project)
+        # project.action = replace_link_tag(modified_text, project)
+        project.action = modified_text
 
     if project.resolution:
         modified_text = replace_image_tags(project.resolution, 'image1',
@@ -449,7 +451,8 @@ def project(lang=None, proj_date=None, proj_n=1, title_slug=None):
                                            project.image2)
         modified_text = replace_image_tags(modified_text, 'image3',
                                            project.image3)
-        project.resolution = replace_link_tag(modified_text, project)
+        # project.resolution = replace_link_tag(modified_text, project)
+        project.resolution = modified_text
 
     return render_template('projects/project_detail.html', lang=lang,
                            proj_date=proj_date, proj_n=proj_n,
