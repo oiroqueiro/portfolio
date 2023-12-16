@@ -22,6 +22,11 @@ So let's explain the path from the beginning.
 #### **The path**
 
 Since I am not a UX/Designer or web developer, and my knowledge of HTML, CSS, and JavaScript was limited, the challenge started being super hard for me. 
+**Multi-language**
+
+One thing that I was sure would not happen was the use of a library to translate all the texts automatically. I know that there are fantastic options out there that could make my portfolio accessible to almost everyone, but I think that a feature made like this would run against the nature of one portfolio.
+
+A portfolio should be a presentation card of the work of someone to show the skills of the owner, using an automated tool, which is quite easy to implement (I know what I'm talking about because I used it in 2 of my previous projects and of course, I am not against this), is not what I wanted, so the choice I took to implement the multi-language was translated by myself the texts and store them in the database making easy to the users to change between the languages that the owner knows (or decide to show).
 
 ##### **The website**
 
