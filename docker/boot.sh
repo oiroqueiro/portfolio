@@ -2,6 +2,11 @@
 
 set -e
 
+# Merging host directory to the container directory
+
+cp -r mounted/img/ portfolio/static/
+cp -f mounted/content.xlsx ./content.xlsx
+
 while true; do
     # Attempt to perform database migrations
     flask db upgrade

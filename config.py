@@ -7,6 +7,9 @@ class Config(object):
 
     SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(24)
 
+    # Google key
+    GOOGLE_TAGMANAGER_KEY = os.environ.get('GOOGLE_TAGMANAGER_KEY') or ''
+
     # Emailing
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
     MAIL_PORT = int(os.environ.get('MAIL_PORT') or 0)

@@ -16,7 +16,9 @@ RUN pip install gunicorn
 
 COPY ../portfolio portfolio
 COPY ../migrations migrations
-COPY ../portfolio.py ../config.py ../create_user.py ../insert_data.py ../reindex_db.py ../content.xlsx ../.env ./
+COPY ../portfolio.py ../config.py ../create_user.py ../insert_data.py ../reindex_db.py ./
+
+# ../content.xlsx ../.env
 COPY ../docker/boot.sh ./
 
 RUN chmod +x ./boot.sh

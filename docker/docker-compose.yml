@@ -11,10 +11,12 @@ services:
     restart: unless-stopped
     ports:
       - "5432:5432"
-    environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    env_file:
+      - ../../portfolio_secrets/env_postgres       
+    #environment:
+    #  - POSTGRES_DB=${POSTGRES_DB}
+    #  - POSTGRES_USER=${POSTGRES_USER}
+    #  - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - ./init.sh:/docker-entrypoint-initdb.d/init.sh
       - pg_data:/var/lib/postgres/data
@@ -25,14 +27,16 @@ services:
     image: elasticsearch:8.10.2
     container_name: elasticsearch
     healthcheck:
-      test: ["CMD", "curl", "-XGET", "http://localhost:9200"]
+      test: ["CMD", "curl", "-XGET", "http://elastic:${ELASTIC_PASSWORD}@elasticsearch:9200"]
       interval: 5s
       timeout: 10s
       retries: 5
       start_period: 60s
+    env_file:
+      - ../../portfolio_secrets/env_elastic      
     environment:
       - discovery.type=single-node
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+    #  - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     restart: unless-stopped
     depends_on:
       postgres:
@@ -52,9 +56,7 @@ services:
     ports:
       - "5000:5000"
     env_file:
-      - .env   
-    environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB} 
+      - ../../portfolio_secrets/env_portfolio  
     restart: unless-stopped
     depends_on:
       postgres:
@@ -66,6 +68,9 @@ services:
       - postgres:postgres
     networks:
       - mynet    
+    volumes:
+      - ../../portfolio_secrets/content.xlsx:/portfolio/mounted/content.xlsx 
+      - ../../portfolio_secrets/portfolio/static/img/:/portfolio/mounted/img/
 
 networks:
   mynet:

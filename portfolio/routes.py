@@ -97,7 +97,8 @@ def inject_data():
 
     menu_home = menu_about = menu_contact = menu_projects = menu_manage = \
         menu_manage_home = menu_manage_about = menu_manage_projects = \
-        menu_manage_contact = menu_manage_logout = foot = search_hint = ''
+        menu_manage_contact = menu_manage_logout = foot = search_hint = \
+        gtm_key = ''
 
     try:
         value = Content.get_value('', lang, 'menu_home')
@@ -136,6 +137,8 @@ def inject_data():
         value = Content.get_value('', lang, 'search')
         search_hint = '' if not value else str(value['value'])
 
+        gtm_key = portfolio.config['GOOGLE_TAGMANAGER_KEY']
+
     except KeyError as k:
         abort(500, k)
 
@@ -148,7 +151,7 @@ def inject_data():
                 menu_manage_contact=menu_manage_contact,
                 menu_manage_logout=menu_manage_logout, foot=foot,
                 proj_n=proj_n, proj_date=proj_date, title_slug=title_slug,
-                search_hint=search_hint)
+                search_hint=search_hint, gtm_key=gtm_key)
 
 # Functions
 
