@@ -27,7 +27,7 @@ services:
     image: elasticsearch:8.10.2
     container_name: elasticsearch
     healthcheck:
-      test: ["CMD", "curl", "-XGET", "http://elastic:${ELASTIC_PASSWORD}@elasticsearch:9200"]
+      test: ["CMD", "curl", "-XGET", "http://elastic:${ELASTIC_PASSWORD}@localhost:9200"]
       interval: 5s
       timeout: 10s
       retries: 5
@@ -49,10 +49,8 @@ services:
       - mynet
 
   app:
+    image: roqueou/portfolio:latest
     container_name: portfolio
-    build:
-      context: /home/roque/03. Projects/portfolio
-      dockerfile: ./docker/dockerfile
     ports:
       - "5000:5000"
     env_file:
