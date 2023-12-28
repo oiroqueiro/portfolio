@@ -1,3 +1,5 @@
+version: '3'
+
 services:
   postgres:
     image: postgres:latest
@@ -12,11 +14,7 @@ services:
     ports:
       - "5432:5432"
     env_file:
-      - ../../portfolio_secrets/env_postgres       
-    #environment:
-    #  - POSTGRES_DB=${POSTGRES_DB}
-    #  - POSTGRES_USER=${POSTGRES_USER}
-    #  - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - ../../portfolio_production/env_postgres       
     volumes:
       - ./init.sh:/docker-entrypoint-initdb.d/init.sh
       - pg_data:/var/lib/postgres/data
@@ -28,15 +26,14 @@ services:
     container_name: elasticsearch
     healthcheck:
       test: ["CMD", "curl", "-XGET", "http://elastic:${ELASTIC_PASSWORD}@localhost:9200"]
-      interval: 5s
+      interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
     env_file:
-      - ../../portfolio_secrets/env_elastic      
+      - ../../portfolio_production/env_elastic      
     environment:
       - discovery.type=single-node
-    #  - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     restart: unless-stopped
     depends_on:
       postgres:
@@ -53,10 +50,16 @@ services:
     build:
       context: /home/roque/03. Projects/portfolio
       dockerfile: ./docker/dockerfile
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://localhost:5000/~/health/"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     ports:
       - "5000:5000"
     env_file:
-      - ../../portfolio_secrets/env_portfolio  
+      - ../../portfolio_production/env_portfolio  
     restart: unless-stopped
     depends_on:
       postgres:
@@ -69,8 +72,31 @@ services:
     networks:
       - mynet    
     volumes:
-      - ../../portfolio_secrets/content.xlsx:/portfolio/mounted/content.xlsx 
-      - ../../portfolio_secrets/portfolio/static/img/:/portfolio/mounted/img/
+      - ../../portfolio_production/portfolio_content/content.xlsx:/portfolio/mounted/content.xlsx 
+      - ../../portfolio_production/portfolio_content/portfolio/static/img/:/portfolio/mounted/img/
+
+  nginx:
+    build:
+      context: .
+      dockerfile: dockerfile.nginx
+    container_name: nginx
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 30s    
+    ports:
+      - "80:80"
+    depends_on:
+      postgres:
+        condition: service_healthy          
+      elasticsearch:
+        condition: service_healthy
+      app:
+        condition: service_healthy
+    networks:
+      - mynet
 
 networks:
   mynet:

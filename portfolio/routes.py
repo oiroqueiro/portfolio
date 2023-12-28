@@ -230,6 +230,13 @@ def catch_all(path, lang):
     print(f"***Non-existent route requested: {path}")
     abort(404)
 
+# Healthcheck
+
+
+@portfolio.route('/~/health/')
+def health():
+    return 'ok'
+
 # index
 
 

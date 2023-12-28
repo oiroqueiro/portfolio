@@ -1,8 +1,10 @@
 ### **Portfolio**
 
+Portfolio built from scratch, from website planning with no idea of web development to deployment with docker without idea of containers.
+
 I had several projects that I wanted to show but I didn't like the idea of using one existent website because all the alternatives that I was trying didn't have some of the features I thought were a must in my portfolio or were not flexible to customize it or were not beautiful (or what I consider beautiful for a portfolio).
 
-Using one of those platforms would be the best option since I have a full-time job and two little girls born during the pandemic years, but I decided to go for it through the complicated path (sometimes hell path) and create my portfolio from scratch.
+Using one of those platforms would be the best option since I have a full-time job and two little girls born during the pandemic years, but I decided to go for it through the complicated path (sometimes hell path) and <u>create my portfolio from scratch</u>.
 
 I know that one portfolio is not a good example for a data analytics project, actually is not related to data analytics, but this project was a great opportunity to show my determination, creative problem solving, adaptability and to learn a lot along the time I would dedicate to this project.
 
@@ -13,7 +15,7 @@ The features I wanted in my portfolio include:
 3. Light/Dark mode
 4. Customizable
 5. Containerized
-6. Elasticsearch
+6. Index Search
 
 The first four were mandatory, the other two I wanted to learn and practice.
 
@@ -22,7 +24,8 @@ So let's explain the path from the beginning.
 #### **The path**
 
 Since I am not a UX/Designer or web developer, and my knowledge of HTML, CSS, and JavaScript was limited, the challenge started being super hard for me. 
-**Multi-language**
+
+##### **Multi-language**
 
 One thing that I was sure would not happen was the use of a library to translate all the texts automatically. I know that there are fantastic options out there that could make my portfolio accessible to almost everyone, but I think that a feature made like this would run against the nature of one portfolio.
 
@@ -66,16 +69,23 @@ I also have a search of keywords, this is much simpler and it will find only the
 
 ##### **Containerization**
 
-And, if all the technologies I had to explore, learn, and implement for my project were not enough, I decided that I should containerize my app. So I started to learn **Docker** since this is one of the most popular platforms. During my learning path, I was able to create a docker container with my Flask app, so I had one docker container with my portfolio working but I wanted to create all my whole project with containers. In the end, I finished with a docker network with 3 containers: 
+And, if all the technologies I had to explore, learn, and implement for my project were not enough, I decided that I should containerize my app. So I started to learn **Docker** since this is one of the most popular platforms. During my learning path, I was able to create a docker container with my Flask app, so I had one docker container with my portfolio working but I wanted to create all my whole project with containers. In the end, I finished with a docker network with ~~3 containers~~ 4 containers: 
 
 - The first one, and more important because has all the data, one PostgreSQL docker
 - The second one, if present, is the Elasticsearch docker for the searching functionality
-- The third one is my Flask app which has even the HTTP Server powered by [**Gunicorn**](https://gunicorn.org/)
+- The third one is my Flask app which has even the WSGI HTTP Server powered by [**Gunicorn**](https://gunicorn.org/)
+- The fourth is the real Web Server and Reverse Proxy, the [**Nginx**](https://www.nginx.com/) docker
 
 ##### **Deployment**
 
-(I am still working on this part)
+~~(I am still working on this part)~~
 
 As the last step of my project, I need to deploy it. During this path, I was working always with opensource or free-of-charge options (except the domain name that I had to pay) and the option I found that could work for me was the use of [**OCI**](https://www.oracle.com/es/cloud/), the **Oracle Cloud Infrastructure** that has one Free Tier (Always Free Services) which I could use for the deployment.
 
-In addition to this, I created one [**Google Analytics**](https://analytics.google.com/) account to monitor and analyze my website.
+The problem arose when I couldn't run all the containers, I could push my flask to the docker hub, but when I pulled it I faced a lot of problems with the architecture of the hardware. After a lot of tests and updates of my container (even though I tried to recompile everything for the new platform), I gave up and decided to try another VPS provider.
+
+This time I decided to go for a paid provider with a platform that I could manage without so many problems, the result was that after configuring a new Ubuntu Server in [**Ginernet**](https://ginernet.com/en/vps/), a Spanish provider (since I am based in Spain) with reasonable prices, I could deploy my website without problems.
+
+The new problems arrived when I tried to access my website from my Android mobile. The browser changes always the *HTTP* protocol to *HTTPS* which I didn't implement in my Flask app, so I changed my docker-compose and added the fourth container (Nginx) and now I need to configure the *HTTPS* protocol (I'm still working on this part)
+
+In addition to this, I created one [**Google Analytics**](https://analytics.google.com/) account to monitor and analyze my website, which is working fine.
