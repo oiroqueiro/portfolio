@@ -82,12 +82,13 @@ services:
     container_name: nginx
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost"]
-      interval: 5s
+      interval: 1m
       timeout: 5s
       retries: 5
       start_period: 30s    
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       postgres:
         condition: service_healthy          
@@ -97,6 +98,8 @@ services:
         condition: service_healthy
     networks:
       - mynet
+    volumes:
+      - /etc/letsencrypt/:/etc/letsencrypt/      
 
 networks:
   mynet:

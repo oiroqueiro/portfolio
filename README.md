@@ -19,6 +19,12 @@ The features I wanted in my portfolio include:
 
 The first four were mandatory, the other two I wanted to learn and practice.
 
+**Demo/My portfolio**
+
+You can see ~~a live demo~~ my portfolio working in  [**Oscarlytics**](https://oscarlytics.com).
+
+
+
 So let's explain the path from the beginning.
 
 #### **The path**
@@ -78,14 +84,379 @@ And, if all the technologies I had to explore, learn, and implement for my proje
 
 ##### **Deployment**
 
-~~(I am still working on this part)~~
-
 As the last step of my project, I need to deploy it. During this path, I was working always with opensource or free-of-charge options (except the domain name that I had to pay) and the option I found that could work for me was the use of [**OCI**](https://www.oracle.com/es/cloud/), the **Oracle Cloud Infrastructure** that has one Free Tier (Always Free Services) which I could use for the deployment.
 
 The problem arose when I couldn't run all the containers, I could push my flask to the docker hub, but when I pulled it I faced a lot of problems with the architecture of the hardware. After a lot of tests and updates of my container (even though I tried to recompile everything for the new platform), I gave up and decided to try another VPS provider.
 
 This time I decided to go for a paid provider with a platform that I could manage without so many problems, the result was that after configuring a new Ubuntu Server in [**Ginernet**](https://ginernet.com/en/vps/), a Spanish provider (since I am based in Spain) with reasonable prices, I could deploy my website without problems.
 
-The new problems arrived when I tried to access my website from my Android mobile. The browser changes always the *HTTP* protocol to *HTTPS* which I didn't implement in my Flask app, so I changed my docker-compose and added the fourth container (Nginx) and now I need to configure the *HTTPS* protocol (I'm still working on this part)
+The new problems arrived when I tried to access my website from my Android mobile.
+The browser changes always the *HTTP* protocol to *HTTPS* which I didn't implement in my Flask app, so I needed to change my docker-compose and add the fourth container (Nginx).
+Then was the turn of the ***HTTPS\*** protocol implementation, which requires ***SSL\*** certificates but not only signed by my server because web browsers only like certificates signed by a well-known certificate authority (if our certificate is not like this, the web browser will show an ugly page before our beautiful website), so with the help of [**Let's Encrypt**](https://letsencrypt.org/) and few tests (like creating a new container that I had to drop in the end) I could give to my website a good enough and free *SSL* certificate.And how I could have this? In the end was quite easy, in the command line of my Ubuntu Server (the host of the dockers), I typed this:
+
+sudo apt-get update
+
+sudo apt-get install certbot python3-certbot-nginx
+
+and then:
+
+sudo certbot certonly --standalone -d yourdomain.com -d www.yourdomain.com
+
+After that, only needed to restart the Nginx container to get the generated certificates. Certbot also creates one cron job to renew the certificates when needed. 
+
+Right now, the quality of my server is grade **A** in [**Qualys. SSL Labs**](https://www.ssllabs.com/), but I will keep trying to get the **A+** grade soon.
 
 In addition to this, I created one [**Google Analytics**](https://analytics.google.com/) account to monitor and analyze my website, which is working fine.
+
+**Installing**
+
+And now I will explain how you can use this project.
+
+First, need to say that I use Linux (Ubuntu) at home, and my project was created using this operating system, so if you are using Windows at least the paths need to be changed, I think that all the paths are in the environment variables or configuration files (docker compose, nginx.conf, ...), which are in the docker folder.
+
+- Python needs to be installed, can be downloaded [here](https://www.python.org/downloads/).
+
+- if you will clone this repository, install Git downloading from [here](https://git-scm.com/downloads)
+
+- Clone this repository in the folder where you will work
+
+- git clone https://github.com/oiroqueiro/portfolio.git
+
+- Create the folder structure for the personal content, in my case I have the project in one folder named *portfolio* and at the same level *portfolio_production* with this structure:
+
+  ├── docker-compose.yml
+  ├── dockerfile.nginx
+  ├── env_elastic
+  ├── env_portfolio
+  ├── env_postgres
+  ├── nginx.bak.conf
+  ├── nginx.conf
+  └── portfolio_content
+      ├── content.xlsx
+      └── portfolio
+          └── static
+              └── img
+                  ├── Favicon144x.png
+                  ├── Favicon16x.png
+                  ├── Favicon180x.png
+                  ├── Favicon192x.png
+                  ├── Favicon32x.png
+                  ├── Favicon48x.png
+                  ├── Favicon512x.png
+                  ├── Favicon72x.png
+                  ├── Favicon96x.png
+                  ├── Logo_black_240x.png
+                  ├── Logo_black_240x.webp
+                  ├── Logo_white_120x.png
+                  ├── Logo_white_240x.webp
+                  ├── og-image.jpg
+                  ├── ProfilePicture1110x.jpg
+                  ├── ProfilePicture1110x_lost.jpg
+                  ├── ProfilePicture1110x_lost.webp
+                  ├── ProfilePicture1110x.webp
+                  ├── ProfilePicture40x_lost.jpg
+                  ├── ProfilePicture40x_smudged_lost.jpg
+                  ├── ProfilePicture545x.webp
+                  ├── ProfilePicture600x_lost.webp
+                  ├── ProfilePicture600x.webp
+                  ├── ProfilePicture700x_lost.webp
+                  ├── ProfilePicture700x.webp
+                  ├── ProfilePictureAbout_1110x.jpg
+                  ├── ProfilePictureAbout_1110x.webp
+                  ├── ProfilePictureAbout_545x.webp
+                  ├── ProfilePictureAbout_600x.webp
+                  ├── ProfilePictureAbout_700x.webp
+                  ├── ProfilePicture.webp
+                  └── projects
+                      ├── project0101_1110x.jpg
+                      ├── project0101_1110x.webp
+                      ├── project0101_545x.webp
+                      ├── project0101_600x.webp
+                      ├── project0101_700x.webp
+                      ├── project0101.jpg
+                      ├── project0102_1110x.jpg
+                      ├── project0102_1110x.webp
+                      ├── project0102_545x.webp
+                      ├── project0102_600x.webp
+                      ├── project0102_700x.webp
+                      ├── project0102.jpg
+                      ├── project0103_1110x.jpg
+                      ├── project0103_1110x.webp
+                      ├── project0103_545x.webp
+                      ├── project0103_600x.webp
+                      ├── project0103_700x.webp
+                      ├── project0103.jpg
+                      ├── project0201_1110x.jpg
+                      ├── project0201_1110x.webp
+                      ├── project0201_545x.webp
+                      ├── project0201_600x.webp
+                      ├── project0201_700x.webp
+                      ├── project0201.jpg
+                      ├── project0202_1110x.jpg
+                      ├── project0202_1110x.webp
+                      ├── project0202_545x.webp
+                      ├── project0202_600x.webp
+                      ├── project0202_700x.webp
+                      ├── project0202.jpg
+                      ├── project0203_1110x.jpg
+                      ├── project0203_1110x.webp
+                      ├── project0203_545x.webp
+                      ├── project0203_600x.webp
+                      ├── project0203_700x.webp
+                      ├── project0203.jpg
+                      ├── project0204_1110x.jpg
+                      ├── project0204_1110x.webp
+                      ├── project0204_545x.webp
+                      ├── project0204_600x.webp
+                      ├── project0204_700x.webp
+                      ├── project0204.jpg
+
+  What you need to know about it:
+
+  - These are the files that need to be modified to run the containers:
+
+    ├── docker-compose.yml
+    ├── dockerfile.nginx
+    ├── env_elastic
+    ├── env_portfolio
+    ├── env_postgres
+    ├── nginx.bak.conf
+    ├── nginx.conf
+
+  - the env* files are the files with the environment variables (users, passwords, emails, number of projects per page, ...) that are used by the containers
+
+  - This is the file with the content of the portfolio (texts of the portfolio itself and personal content like about, projects, personal texts, ...). When you want to change or add something, just modify the Excel file, upload it to the production environment, and restart the portfolio docker. Is there a content_template.xlsx in the main folder of the project where can see some data:
+
+    ├── content.xlsx
+
+    In it you can see 4 sheets:
+
+    - languages: Using the [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) codes, in my case:
+
+      | **language** |
+      | ------------ |
+      | en           |
+      | es           |
+
+  - portfolio: The texts of the website itself, you can modify them on your own or add more languages. For example:
+
+    | **template** | **variable**  | **language** | **value** |
+    | ------------ | ------------- | ------------ | --------- |
+    |              | menu_home     | en           | Home      |
+    |              | menu_about    | en           | About     |
+    |              | menu_projects | en           | Projects  |
+    |              | menu_contact  | en           | Contact   |
+
+    Notice that the template column needs to be empty
+
+  - content: The personal texts needed to be modified for every template (but projects that have their own). In my case, the first rows look like this:
+
+    | **template** | **variable** | **language** | **value**                                                    |
+    | ------------ | ------------ | ------------ | ------------------------------------------------------------ |
+    | index        | hello        | en           | Hey, I’m                                                     |
+    | index        | name         | en           | Oscar Iglesias                                               |
+    | index        | subtitle     | en           | Data Analyst & ERP Developer Analyst. Welcome to my Portfolio. |
+    | index        | hello        | es           | Hola, soy                                                    |
+    | index        | name         | es           | Oscar Iglesias                                               |
+    | index        | subtitle     | es           | Analista de Datos & Analista Desarrollador de ERP. Bienvenid@ a mi Portfolio. |
+    | about        | hello        | en           | Hi,I’m Oscar Iglesias, Data Analyst and ERP Analyst Developer |
+    | about        | parragraph1  | en           | I'm living in ...                                            |
+    | about        | parragraph2  | en           | I love working with data. During my professional experience, I got the chance to work with many types of databases and acquire a great experience helping stakeholders to get more information and discover good insights because of my skills in visualisation as well. |
+
+  - projects: The content of the projects with these columns:
+
+    | **date** | **project_n** | **language** | **title** | **resume** | **exposition** | **action** | **resolution** | **keywords** | **link1** | **link2** | **link3** | **link4** | **link5** | **image_title** | **image1** | **image2** | **image3** |      |
+    | -------- | ------------- | ------------ | --------- | ---------- | -------------- | ---------- | -------------- | ------------ | --------- | --------- | --------- | --------- | --------- | --------------- | ---------- | ---------- | ---------- | ---- |
+
+    - date: is the date when the project was released
+
+    - project_n: the number of the project in that day (if you are super productive and don't have litle daughters... )
+
+    - language: the ISO 639-1 code of the language used in this row
+
+    - title: the title that appears in the list of projects
+
+    - resume: the text that appears in the list of projects
+
+    - exposition, action, resolution: the 3 blocks I divided the projects, can use how you want, to me is easier to work like this, or use only one it's up to you. In these blocks, you can use references to the images. 
+
+    - keywords: separated by commas (,)
+
+    - links: this column has no use in the project, I created but in the end, the use of Markdown and HTML was enough to reach what I wanted to get. But I keep them just in case in the future I need them
+
+    - image_title, image1, image2, image3: I thought to create more columns but in the end were enough for me, one image for the header and one for each block, they can be referenced in the blocks of the content (exposition, action, resolution) like this:
+
+      ` <img>image1</img>`
+
+      ` <img>image2</img>`
+
+      ` <img>image3</img>`
+
+  - These are the images of the portfolio (the images for the projects are not at this level):
+
+                └── img
+                    ├── Favicon144x.png
+                    ├── Favicon16x.png
+                    ├── Favicon180x.png
+                    ├── Favicon192x.png
+                    ├── Favicon32x.png
+                    ├── Favicon48x.png
+                    ├── Favicon512x.png
+                    ├── Favicon72x.png
+                    ├── Favicon96x.png
+                    ├── Logo_black_240x.png
+                    ├── Logo_black_240x.webp
+                    ├── Logo_white_120x.png
+                    ├── Logo_white_240x.webp
+                    ├── og-image.jpg
+                    ├── ProfilePicture1110x.jpg
+                    ├── ProfilePicture1110x_lost.jpg
+                    ├── ProfilePicture1110x_lost.webp
+                    ├── ProfilePicture1110x.webp
+                    ├── ProfilePicture40x_lost.jpg
+                    ├── ProfilePicture40x_smudged_lost.jpg
+                    ├── ProfilePicture545x.webp
+                    ├── ProfilePicture600x_lost.webp
+                    ├── ProfilePicture600x.webp
+                    ├── ProfilePicture700x_lost.webp
+                    ├── ProfilePicture700x.webp
+                    ├── ProfilePictureAbout_1110x.jpg
+                    ├── ProfilePictureAbout_1110x.webp
+                    ├── ProfilePictureAbout_545x.webp
+                    ├── ProfilePictureAbout_600x.webp
+                    ├── ProfilePictureAbout_700x.webp
+                    ├── ProfilePicture.webp
+
+    What you need to know is that if you want to use your images, only be careful to set the corresponding name (ProfilePicture1110x.jpg for example), I think that is quite self-explainable the names to know what they are for. Just tell you that the 1110x, 700x, ... are the horizontal pixels of the pictures.
+
+  - These are the images of the projects:
+
+                    └── projects
+                        ├── project0101_1110x.jpg
+                        ├── project0101_1110x.webp
+                        ├── project0101_545x.webp
+                        ├── project0101_600x.webp
+                        ├── project0101_700x.webp
+                        ├── project0101.jpg
+                        ├── project0102_1110x.jpg
+                        ├── project0102_1110x.webp
+                        ├── project0102_545x.webp
+                        ├── project0102_600x.webp
+                        ├── project0102_700x.webp
+                        ├── project0102.jpg
+                        ├── project0103_1110x.jpg
+                        ├── project0103_1110x.webp
+                        ├── project0103_545x.webp
+                        ├── project0103_600x.webp
+                        ├── project0103_700x.webp
+                        ├── project0103.jpg
+                        ├── project0201_1110x.jpg
+                        ├── project0201_1110x.webp
+                        ├── project0201_545x.webp
+                        ├── project0201_600x.webp
+                        ├── project0201_700x.webp
+                        ├── project0201.jpg
+                        ├── project0202_1110x.jpg
+                        ├── project0202_1110x.webp
+                        ├── project0202_545x.webp
+                        ├── project0202_600x.webp
+                        ├── project0202_700x.webp
+                        ├── project0202.jpg
+                        ├── project0203_1110x.jpg
+                        ├── project0203_1110x.webp
+                        ├── project0203_545x.webp
+                        ├── project0203_600x.webp
+                        ├── project0203_700x.webp
+                        ├── project0203.jpg
+                        ├── project0204_1110x.jpg
+                        ├── project0204_1110x.webp
+                        ├── project0204_545x.webp
+                        ├── project0204_600x.webp
+                        ├── project0204_700x.webp
+                        ├── project0204.jpg
+
+    The project is ready to use up to 4 images, one of them for the header. To configure them, in the content.txt only need to type the name of the image without the underscore, pixels, and extensions, for example:
+
+    | **image_title** | **image1**  | **image2**  | **image3**  |
+    | --------------- | ----------- | ----------- | ----------- |
+    | project0101     | project0102 | project0103 |             |
+    | project0101     | project0102 | project0103 |             |
+    | project0201     | project0202 | project0203 | project0204 |
+    | project0201     | project0202 | project0203 | project0204 |
+
+    
+
+- If you want to run locally without containers, you need to fill the content of the environment variables in the file **.env** in the main folder of the project and run it to load them in memory. The PROJECTS_PAGE will show this number of projects in the index of projects, you can adjust as you want. PORTFOLIO_LOGIN_URL AND PORTFOLIO_LOGOUT_URL are the names for the routes in the URL of the web browser to be logged in or logged out, which are customizable. At the moment they only work on creating new menu options but in the future, I plan to add and modify the content from inside the portfolio instead of using an Excel file:
+
+​	export MAIL_SERVER=
+
+​	export MAIL_PORT=465
+
+​	export MAIL_USE_SSL=True
+
+​	export MAIL_USE_TLS=False
+
+​	export MAIL_USERNAME=
+
+​	export MAIL_PASSWORD=
+
+​	export MAIL_RECIPIENT=
+
+​	export PORTFOLIO_LOGIN_URL=login
+
+​	export PORTFOLIO_LOGOUT_URL=end
+
+​	export PROJECTS_PAGE=4
+
+​	export DATABASE_URL=
+
+​	export ELASTICSEARCH_URL=
+
+
+
+- To run the containers, first need to install docker, you can download it from [here](https://www.docker.com/products/docker-desktop/?_gl=1*1o5ji3v*_ga*MTA2Mzg1NDYyMy4xNjg4ODM4Mjc3*_ga_XJWPQMJYHQ*MTcwNDAzODk3OC42Ny4xLjE3MDQwMzkwMjEuMTcuMC4w).
+
+  Then, you have to modify the paths and your domain in the files inside the *docker* folder. Then you have 2 options:
+
+  - run like this, then you can use:
+
+    `docker compose -f docker-compose_pulling.yml -p portfolio up -d`
+
+    or
+
+    `docker-compose -f docker-compose_pulling.yml -p portfolio up -d`
+
+    depending on your system.
+
+    This will pull the image that I have created which is in the [**docker hub**](https://hub.docker.com/repository/docker/roqueou/portfolio/general)
+
+    If the setup is ok (all the configurations are well), will have 4 containers running your portfolio.
+
+  - modify your portfolio on your own and create one docker for your portfolio with your modifications:
+
+    `docker compose -f docker-compose_builder.yml`
+
+    or
+
+    `docker-compose -f docker-compose_builder.yml`
+
+    depending on your system.
+
+    After that you have your image that can run with the other 3 containers.
+
+- If you want to push your image to docker hub and then use the pulling method, then you have to:
+
+  - create one account in the hub of docker, [here](https://hub.docker.com/)
+
+  - tag your image:
+
+    `docker tag your_image_name yourusername/name_of_your_image:version`
+
+    first, use your local image name and then the name that you want to publish in your hub with the version (usually: latest)
+
+  - push it:
+
+    `docker push yourusername/name_of_your_image:version`
+
+  - then modify the docker-compose_pulling.yml to download your image and that's it.
+
