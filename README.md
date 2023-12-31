@@ -124,6 +124,7 @@ First, need to say that I use Linux (Ubuntu) at home, and my project was created
 
 - Create the folder structure for the personal content, in my case I have the project in one folder named *portfolio* and at the same level *portfolio_production* with this structure:
 
+  ```
   ├── docker-compose.yml
   ├── dockerfile.nginx
   ├── env_elastic
@@ -210,11 +211,13 @@ First, need to say that I use Linux (Ubuntu) at home, and my project was created
                       ├── project0204_600x.webp
                       ├── project0204_700x.webp
                       ├── project0204.jpg
+  ```
 
   What you need to know about it:
 
   - These are the files that need to be modified to run the containers:
 
+    ```
     ├── docker-compose.yml
     ├── dockerfile.nginx
     ├── env_elastic
@@ -222,12 +225,15 @@ First, need to say that I use Linux (Ubuntu) at home, and my project was created
     ├── env_postgres
     ├── nginx.bak.conf
     ├── nginx.conf
+    ```
 
   - the env* files are the files with the environment variables (users, passwords, emails, number of projects per page, ...) that are used by the containers
 
   - This is the file with the content of the portfolio (texts of the portfolio itself and personal content like about, projects, personal texts, ...). When you want to change or add something, just modify the Excel file, upload it to the production environment, and restart the portfolio docker. Is there a content_template.xlsx in the main folder of the project where can see some data:
 
-    ├── content.xlsx
+    ```
+        ├── content.xls
+    ```
 
     In it you can see 4 sheets:
 
