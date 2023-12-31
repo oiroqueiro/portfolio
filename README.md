@@ -94,13 +94,13 @@ The new problems arrived when I tried to access my website from my Android mobil
 The browser changes always the *HTTP* protocol to *HTTPS* which I didn't implement in my Flask app, so I needed to change my docker-compose and add the fourth container (Nginx).
 Then was the turn of the ***HTTPS\*** protocol implementation, which requires ***SSL\*** certificates but not only signed by my server because web browsers only like certificates signed by a well-known certificate authority (if our certificate is not like this, the web browser will show an ugly page before our beautiful website), so with the help of [**Let's Encrypt**](https://letsencrypt.org/) and few tests (like creating a new container that I had to drop in the end) I could give to my website a good enough and free *SSL* certificate.And how I could have this? In the end was quite easy, in the command line of my Ubuntu Server (the host of the dockers), I typed this:
 
-sudo apt-get update
+`sudo apt-get update`
 
-sudo apt-get install certbot python3-certbot-nginx
+`sudo apt-get install certbot python3-certbot-nginx`
 
 and then:
 
-sudo certbot certonly --standalone -d yourdomain.com -d www.yourdomain.com
+`sudo certbot certonly --standalone -d yourdomain.com -d www.yourdomain.com`
 
 After that, only needed to restart the Nginx container to get the generated certificates. Certbot also creates one cron job to renew the certificates when needed. 
 
