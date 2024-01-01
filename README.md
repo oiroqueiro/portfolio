@@ -116,11 +116,35 @@ First, need to say that I use Linux (Ubuntu) at home, and my project was created
 
 - Python needs to be installed, can be downloaded [here](https://www.python.org/downloads/).
 
-- if you will clone this repository, install Git downloading from [here](https://git-scm.com/downloads)
+- If you will clone this repository, install Git downloading from [here](https://git-scm.com/downloads)
 
 - Clone this repository in the folder where you will work
 
-- git clone https://github.com/oiroqueiro/portfolio.git
+  `git clone https://github.com/oiroqueiro/portfolio.git`
+
+- Create one environment to work, for instance, inside your project, type
+
+  `python3 -m venv test`
+
+  where test is the name that you want for your environment
+
+- Activate the new environment
+
+  `source test/bin/activate`
+
+  or in windows:
+
+  `test\Srcripts\activate.bat`
+
+  if you see something like this, with the environment name between parentheses at the beginning of the line, it's activated:
+
+  `(temp) user@pc:/portfolio$`
+
+- Then install all the requirements typing:
+
+  `pip install -r requirements.txt`
+
+  and it should be ready to work
 
 - Create the folder structure for the personal content, in my case I have the project in one folder named *portfolio* and at the same level *portfolio_production* with this structure:
 
