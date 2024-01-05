@@ -490,3 +490,8 @@ First, need to say that I use Linux (Ubuntu) at home, and my project was created
 
   - then modify the docker-compose_pulling.yml to download your image and that's it.
 
+- And if you want to monitor is your server is Up or Down, and even the days that your ssl certificate would be valid, I can recommend install the docker of [**Uptime Kuma**](https://github.com/louislam/uptime-kuma), with just this line of code:
+
+  `docker run -d --restart=always -p 3001:3001 -v uptime-kuma:/app/data --name uptime-kuma louislam/uptime-kuma:1`
+
+  Then, you can configure and analyze your website using the url: http://localhost:3001/
