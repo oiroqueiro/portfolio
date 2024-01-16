@@ -418,7 +418,7 @@ First, need to say that I use Linux (Ubuntu) at home, and my project was created
 
     
 
-- If you want to run locally without containers, you need to fill the content of the environment variables in the file **.env** in the main folder of the project and run it to load them in memory. The PROJECTS_PAGE will show this number of projects in the index of projects, you can adjust as you want. UPDATE_DATA if is True, will execute the insert_data.py on the load. PORTFOLIO_LOGIN_URL AND PORTFOLIO_LOGOUT_URL are the names for the routes in the URL of the web browser to be logged in or logged out, which are customizable. At the moment they only work on creating new menu options but in the future, I plan to add and modify the content from inside the portfolio instead of using an Excel file:
+- If you want to run locally without containers, you need to fill the content of the environment variables in the file **.env** in the main folder of the project and run it to load them in memory. The PROJECTS_PAGE will show this number of projects in the index of projects, you can adjust as you want. UPDATE_DATA if is True, will execute the insert_data.py on the load of the **boot.sh** file. PORTFOLIO_LOGIN_URL AND PORTFOLIO_LOGOUT_URL are the names for the routes in the URL of the web browser to be logged in or logged out, which are customizable. At the moment they only work on creating new menu options but in the future, I plan to add and modify the content from inside the portfolio instead of using an Excel file:
 
 ​        export FLASK_APP=portfolio.py
 
