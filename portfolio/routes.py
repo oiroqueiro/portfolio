@@ -10,6 +10,8 @@ from datetime import datetime
 from babel.dates import format_date, format_datetime, format_time
 from babel.dates import get_month_names
 import traceback
+from cutecharts.charts import Radar
+
 
 portfolio.app_context().push()
 
@@ -323,13 +325,39 @@ def about(lang=None, proj_date=None, proj_n=1, title_slug=None):
     value = Content.get_value('', lang, 'more')
     more = '' if not value else str(value['value'])
 
+    value = Content.get_value('', lang, 'keyw_title')
+    keyw_title = '' if not value else str(value['value'])
+
+    value = Content.get_value('', lang, 'menu_projects')
+    projs_n = '' if not value else str(value['value'])
+
+    # Keywords
+    langid = Languages.getid(lang)
+    query_keyw = request.args.get('q')
+    all_keywords, keywords_freq = Projects.get_all_keyws_and_freq(langid,
+                                                                  query_keyw)
+    all_keywords_and_freq = sorted(
+        keywords_freq.items(), key=lambda x: [1], reverse=True)
+    x, y = zip(*all_keywords_and_freq)
+    x = list(x)
+    y = list(y)
+
+    # Creating the charts
+
+    chart = Radar(keyw_title)
+    chart.set_options(labels=x)
+    chart.add_series(projs_n, y)
+
+    html = chart.render()
+
     return render_template('about/index.html', lang=lang, hello=hello,
                            parragraph1=parragraph1, parragraph2=parragraph2,
                            parragraph3=parragraph3, parragraph4=parragraph4,
                            parragraph5=parragraph5, parragraph6=parragraph6,
                            skills_title=skills_title, skill1=skill1,
                            skill2=skill2, skill3=skill3, more=more,
-                           youtube=youtube)
+                           youtube=youtube, plot=html)
+
 
 # projects
 

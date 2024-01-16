@@ -8,6 +8,7 @@ from flask_wtf.csrf import CSRFProtect
 from flaskext.markdown import Markdown
 from elasticsearch import Elasticsearch
 
+
 portfolio = Flask(__name__)
 portfolio.config.from_object(Config)
 

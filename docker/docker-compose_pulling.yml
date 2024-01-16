@@ -14,7 +14,7 @@ services:
     ports:
       - "5432:5432"
     env_file:
-      - ../../portfolio_production/env_postgres       
+      - ../../00.portfolio_production/env_postgres       
     volumes:
       - ./init.sh:/docker-entrypoint-initdb.d/init.sh
       - pg_data:/var/lib/postgres/data
@@ -31,7 +31,7 @@ services:
       retries: 5
       start_period: 60s
     env_file:
-      - ../../portfolio_production/env_elastic      
+      - ../../00.portfolio_production/env_elastic      
     environment:
       - discovery.type=single-node
     restart: unless-stopped
@@ -57,7 +57,7 @@ services:
     ports:
       - "5000:5000"
     env_file:
-      - ../../portfolio_production/env_portfolio  
+      - ../../00.portfolio_production/env_portfolio  
     restart: unless-stopped
     depends_on:
       postgres:
@@ -70,8 +70,8 @@ services:
     networks:
       - mynet    
     volumes:
-      - ../../portfolio_production/portfolio_content/content.xlsx:/portfolio/mounted/content.xlsx 
-      - ../../portfolio_production/portfolio_content/portfolio/static/img/:/portfolio/mounted/img/
+      - ../../00.portfolio_production/portfolio_content/content.xlsx:/portfolio/mounted/content.xlsx 
+      - ../../00.portfolio_production/portfolio_content/portfolio/static/img/:/portfolio/mounted/img/
 
   nginx:
     build:

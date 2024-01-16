@@ -53,6 +53,8 @@ After spending many, many, many hours understanding the HTML, CSS, javascript, a
 
 At this point I want to share with all of you [**this fantastic tutorial of Flask**](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world), by *Miguel Grinberg*. I also use this one, in Spanish, of [**j2logo**](https://j2logo.com/tutorial-flask-espanol/) by *Juan José Lozano Gómez*. I learned a lot with them and with all the features that I had to face.
 
+In the end, I added one chart in the about me section, created with [**cutecharts**](https://github.com/cutecharts/cutecharts.py), which will show a summary of the keywords present on the portfolio.
+
 ##### **Customizable**
 
 I wanted a customizable website so after evaluating different options, I decided to use one Excel file to store all the texts of my website in addition to the content of my portfolio. The menus texts, buttons, images, ... can be adapted easily.
@@ -416,7 +418,9 @@ First, need to say that I use Linux (Ubuntu) at home, and my project was created
 
     
 
-- If you want to run locally without containers, you need to fill the content of the environment variables in the file **.env** in the main folder of the project and run it to load them in memory. The PROJECTS_PAGE will show this number of projects in the index of projects, you can adjust as you want. PORTFOLIO_LOGIN_URL AND PORTFOLIO_LOGOUT_URL are the names for the routes in the URL of the web browser to be logged in or logged out, which are customizable. At the moment they only work on creating new menu options but in the future, I plan to add and modify the content from inside the portfolio instead of using an Excel file:
+- If you want to run locally without containers, you need to fill the content of the environment variables in the file **.env** in the main folder of the project and run it to load them in memory. The PROJECTS_PAGE will show this number of projects in the index of projects, you can adjust as you want. UPDATE_DATA if is True, will execute the insert_data.py on the load. PORTFOLIO_LOGIN_URL AND PORTFOLIO_LOGOUT_URL are the names for the routes in the URL of the web browser to be logged in or logged out, which are customizable. At the moment they only work on creating new menu options but in the future, I plan to add and modify the content from inside the portfolio instead of using an Excel file:
+
+​        export FLASK_APP=portfolio.py
 
 ​	export MAIL_SERVER=
 
@@ -437,6 +441,8 @@ First, need to say that I use Linux (Ubuntu) at home, and my project was created
 ​	export PORTFOLIO_LOGOUT_URL=end
 
 ​	export PROJECTS_PAGE=4
+
+​	export UPDATE_DATA=True
 
 ​	export DATABASE_URL=
 
