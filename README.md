@@ -24,10 +24,10 @@ The first four were mandatory, the other two I wanted to learn and practice.
 You can see ~~a live demo~~ my portfolio working in  [**Oscarlytics**](https://oscarlytics.com).
 
 *2024/09 Update*
-*The following features have been added:*
-*- Robots.txt to allow web crawlers to index the portfolio. Since this is a static file, I decided to serve the file using Nginx instead of serving it from within the portfolio.*
-*- sitemap.xml to help the indexing of the webpages. At this moment I have only few projects so was easy to create one static file. In the future, if keep adding projects at a slow pace, this method will be easy to mantain. If I have more time to add more projects, I will implement a dynamic sitemap.xml*
-*- reCaptcha v3 to prevent spam. I was receiving few messages that were clearly spam, so I decided to implement this method of Google in his free tier.*
+*The following features have been added:*  
+*- Robots.txt to allow web crawlers to index the portfolio. Since this is a static file, I decided to serve the file using Nginx instead of serving it from within the portfolio.*  
+*- sitemap.xml to help the indexing of the webpages. At this moment I have only few projects so was easy to create one static file. In the future, if keep adding projects at a slow pace, this method will be easy to mantain. If I have more time to add more projects, I will implement a dynamic sitemap.xml*  
+*- reCaptcha v3 to prevent spam. I was receiving few messages that were clearly spam, so I decided to implement this method of Google in his free tier.*  
 
 
 So let's explain the path from the beginning.
