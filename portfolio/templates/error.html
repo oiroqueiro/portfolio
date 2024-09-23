@@ -9,9 +9,9 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-10 mx-auto text-center">        
-          <h1>{{ error_text }}</h1>
+          <h1>{{ error_text|markdown }}</h1>
           <IMG SRC="{{ url_for('static', filename='img/_mistake_500x.webp') }}">
-          <h4>{{ error_subtitle }}</h4>
+          <h4>{{ error_subtitle|markdown }}</h4>
           <br>
           <div>
             <a href="{{ url_for('index', _external=True, lang=lang) }}" class="btn btn-primary">{{ back_home }}</a>

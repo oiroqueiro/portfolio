@@ -22,7 +22,7 @@ COPY ../docker/boot.sh ./
 
 RUN chmod +x ./boot.sh
 
-ENV FLASK_APP portfolio.py
+ENV FLASK_APP=portfolio.py
 
 RUN chown -R portfolio:portfolio ./
 USER portfolio

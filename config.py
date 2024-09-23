@@ -10,6 +10,10 @@ class Config(object):
     # Google key
     GOOGLE_TAGMANAGER_KEY = os.environ.get('GOOGLE_TAGMANAGER_KEY') or ''
 
+    # Google Captcha v3
+    RECAPTCHA_SITE_KEY = os.environ.get('RECAPTCHA_SITE_KEY') or ''
+    RECAPTCHA_SECRET_KEY = os.environ.get('RECAPTCHA_SECRET_KEY') or ''
+
     # Emailing
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
     MAIL_PORT = int(os.environ.get('MAIL_PORT') or 0)

@@ -1,0 +1,7 @@
+Navigate to your project root (The parent folder of your docker folder):
+cd ..
+
+Run the Docker build command:
+docker build -t user_docker_hub/docker_image:tag_image -f docker/Dockerfile .
+
+This sets the build context to the current directory (project root) and specifies the Dockerfile location.

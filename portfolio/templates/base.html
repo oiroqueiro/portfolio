@@ -4,7 +4,7 @@
 <head>
   
   <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id={{ gtm_key }}"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ gtm_key }}"></script>  
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
@@ -12,6 +12,10 @@
 
     gtag('config', '{{ gtm_key }}');
   </script>
+
+  <!-- Google recaptcha v3 -->
+  <script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_site_key }}"></script>
+
 
 	<meta charset="utf-8" />
 

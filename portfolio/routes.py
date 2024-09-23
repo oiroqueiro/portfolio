@@ -1,5 +1,5 @@
 from flask import render_template, send_from_directory, request, redirect, \
-    url_for, flash, abort, jsonify
+    url_for, flash, abort, jsonify, Response
 from portfolio import portfolio, db
 from portfolio.emails import send_email
 from flask_login import current_user, login_user, logout_user
@@ -11,7 +11,7 @@ from babel.dates import format_date, format_datetime, format_time
 from babel.dates import get_month_names
 import traceback
 from cutecharts.charts import Radar
-
+import requests
 
 portfolio.app_context().push()
 
@@ -40,6 +40,11 @@ def handle_all_errors(e):
 
     lang = request.lang
     proj_n = request.proj_n
+
+    if lang is None:
+        lang = 'en'
+
+    set_lang(lang)
 
     value = Content.get_value('', lang, 'error')
     error_text = '' if not value else str(value['value'])
@@ -100,7 +105,7 @@ def inject_data():
     menu_home = menu_about = menu_contact = menu_projects = menu_manage = \
         menu_manage_home = menu_manage_about = menu_manage_projects = \
         menu_manage_contact = menu_manage_logout = foot = search_hint = \
-        gtm_key = ''
+        gtm_key = recaptcha_site_key = ''
 
     try:
         value = Content.get_value('', lang, 'menu_home')
@@ -141,6 +146,9 @@ def inject_data():
 
         gtm_key = portfolio.config['GOOGLE_TAGMANAGER_KEY']
 
+        # Google ReCaptcha v3
+        recaptcha_site_key = portfolio.config['RECAPTCHA_SITE_KEY']
+
     except KeyError as k:
         abort(500, k)
 
@@ -153,7 +161,8 @@ def inject_data():
                 menu_manage_contact=menu_manage_contact,
                 menu_manage_logout=menu_manage_logout, foot=foot,
                 proj_n=proj_n, proj_date=proj_date, title_slug=title_slug,
-                search_hint=search_hint, gtm_key=gtm_key)
+                search_hint=search_hint, gtm_key=gtm_key,
+                recaptcha_site_key=recaptcha_site_key)
 
 # Functions
 
@@ -170,19 +179,19 @@ def replace_image_tags(text, img_n, image):
     return modified_text: the text ready to render
     '''
 
-    replacement_html = f'''<img loading="lazy" decoding="async" 
-                        src="{ url_for('static', filename='img/projects/') }{ image }_1110.jpg" 
-                        srcset="{ url_for('static', filename='img/projects/') }{ image }_545x.webp 545w,
-                                { url_for('static', filename='img/projects/') }{ image }_600x.webp 600w,
-                                { url_for('static', filename='img/projects/') }{ image }_700x.webp 700w,
-                                { url_for('static', filename='img/projects/') }{ image }_1110x.webp 1110w"
+    replacement_html = f'''<img loading="lazy" decoding="async"
+                        src="{url_for('static', filename='img/projects/')}{image}_1110.jpg"
+                        srcset="{url_for('static', filename='img/projects/')}{image}_545x.webp 545w,
+                                {url_for('static', filename='img/projects/')}{image}_600x.webp 600w,
+                                {url_for('static', filename='img/projects/')}{image}_700x.webp 700w,
+                                {url_for('static', filename='img/projects/')}{image}_1110x.webp 1110w"
                         sizes="(max-width: 575px) 545px,
                                 (max-width: 767px) 600px,
                                 (max-width: 991px) 700px,
                                 1110px"
-                        class="w-100 card-img-top img-fluid" 
-                         alt="{ image }"
-                        width="1200" 
+                        class="w-100 card-img-top img-fluid"
+                         alt="{image}"
+                        width="1200"
                         height="800">'''
 
     modified_text = text.replace(f"<img>{img_n}</img>", replacement_html)
@@ -205,7 +214,7 @@ def get_date_name(language, date):
 
     Keyword arguments:
     language -- iso code
-    date 
+    date
     Return: the date
     """
 
@@ -221,11 +230,13 @@ def get_lang_name_proj(proj_id):
     langid = Projects.query.filter_by(id=proj_id).first().languageid
     return Languages.query.filter_by(id=langid).first().language
 
+
 # Views
 
 
 @portfolio.route('/<path:path>')
 def catch_all(path, lang):
+
     if lang is None:
         lang = 'en'
 
@@ -536,11 +547,44 @@ def contact(lang=None, proj_date=None, proj_n=1, title_slug=None):
     value = Content.get_value('contact', lang, 'email_subject')
     email_subject = '' if not value else str(value['value'])
 
+    # Google ReCaptcha v3
+    recaptcha_site_key = portfolio.config['RECAPTCHA_SITE_KEY']
+    recaptcha_secret_key = portfolio.config['RECAPTCHA_SECRET_KEY']
+
     if request.method == 'POST':
+        # Verify reCAPTCHA
+        recaptcha_response = request.form.get('g-recaptcha-response')
+
+        if not recaptcha_response:
+            flash('reCAPTCHA verification failed. Please try again.', 'error')
+            return redirect(request.url)
+
+        verification_url = 'https://www.google.com/recaptcha/api/siteverify'
+        verification_data = {
+            'secret': recaptcha_secret_key,
+            'response': recaptcha_response,
+            'remoteip': request.remote_addr
+        }
+
+        verification_result = requests.post(
+            verification_url, data=verification_data).json()
+        score_recaptcha = verification_result.get('score')
+
+        # Emailing
+
         first_name_post = request.form['First Name']
         last_name_post = request.form['Last Name']
         email_post = request.form['Email']
         message_post = request.form['Type your message...']
+
+        if verification_result.get('success'):
+            if verification_result.get('score') < 0.7:
+                email_subject = f'[SPAM] {email_subject}'
+            message_post = f'{message_post} \n\n***score: {score_recaptcha}'
+        else:
+            email_subject = f'[probably SPAM] {email_subject}'
+            message_post = \
+                f'{message_post} \n\n***result: {verification_result}'
 
         msg_body = f"Name: {first_name_post} {last_name_post}\n\nEmail: \
             {email_post}\n\nMessage:\n {message_post}"
@@ -548,12 +592,14 @@ def contact(lang=None, proj_date=None, proj_n=1, title_slug=None):
         send_email(portfolio.config['MAIL_USERNAME'],
                    portfolio.config['MAIL_RECIPIENT'], email_subject, msg_body)
 
+        flash('Your message has been sent successfully!', 'success')
+
         return redirect(request.url)
 
     return render_template('contact/index.html', lang=lang, title=title,
                            subtitle=subtitle, first_name=first_name,
                            last_name=last_name, email=email, message=message,
-                           submit=submit)
+                           submit=submit, recaptcha_site_key=recaptcha_site_key)
 
 # search
 

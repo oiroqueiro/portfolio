@@ -27,7 +27,8 @@ Flask-Markdown==0.3
 Flask-Migrate==4.0.4
 Flask-SQLAlchemy==3.0.5
 Flask-WTF==1.1.1
-greenlet==2.0.2
+gevent==24.2.1
+greenlet==3.1.0
 idna==3.4
 ipykernel==6.25.1
 ipython==8.14.0
@@ -72,6 +73,7 @@ pytz==2023.3
 pyzmq==25.1.1
 readtime==3.0.0
 requests==2.31.0
+setuptools==75.1.0
 six==1.16.0
 soupsieve==2.5
 SQLAlchemy==2.0.20
@@ -86,3 +88,5 @@ urllib3==1.26.16
 wcwidth==0.2.6
 Werkzeug==2.3.6
 WTForms==3.0.1
+zope.event==5.0
+zope.interface==7.0.3
