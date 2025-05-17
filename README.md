@@ -1,3 +1,5 @@
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/oiroqueiro/portfolio)
+
 ### **Portfolio**
 
 Portfolio built from scratch, from website planning with no idea of web development to deployment with docker without idea of containers.
